@@ -58,7 +58,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkDrawingArea" id="area"/>
+      <object class="GtkDrawingArea" id="area">
+        <signal name="resize" handler="resize_cb" swapped="no"/>
+      </object>
     </child>
   </template>
 </interface>
