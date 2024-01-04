@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/com/git/sfg">
     <file preprocess="xml-stripblanks">mainWindow.ui</file>
+    <file preprocess="xml-stripblanks">menuButtonOpciones.ui</file>
   </gresource>
 </gresources>
