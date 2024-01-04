@@ -58,12 +58,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="content_box">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkStack" id="stack"/>
-        </child>
-      </object>
+      <object class="GtkDrawingArea" id="area"/>
     </child>
   </template>
 </interface>
