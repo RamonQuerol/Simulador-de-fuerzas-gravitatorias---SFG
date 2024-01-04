@@ -11,8 +11,9 @@ struct _SfgMainWindow
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static void
-sfg_main_window_init (SfgMainWindow *app)
+sfg_main_window_init (SfgMainWindow *win)
 {
+  gtk_widget_init_template (GTK_WIDGET (win));
 }
 
 static void
