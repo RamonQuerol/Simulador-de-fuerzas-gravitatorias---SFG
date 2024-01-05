@@ -21,28 +21,19 @@ struct Circulo
   double y;
 };
 
+struct Cuerpo{
+  float masa;
+  float velocidad;
+  float posicionX;
+  float posicionY;
+};
+
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
 
-static void
-comenzar_simulacion()
-{
-  printf("Simulacion comenzada");
-}
 
-static void
-finalizar_simulacion()
-{
-  printf("Simulacion finalizada");
-}
-
-static void
-anadir_cuerpo()
-{
-  printf("Se añadio un cuerpo");
-}
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -72,6 +63,40 @@ clear_surface(void)
   cairo_destroy(cr);
 }
 
+static void pintar_cuerpos()
+{
+  printf("dibujando cuerpo \n");
+  cairo_t *cr = cairo_create(surface);
+
+  // De momento aqui, pero cambiar a futuro
+  struct Circulo miCirculo;
+  
+  miCirculo.masa = 50 ;
+  miCirculo.x = 0;
+  miCirculo.y = 0;
+
+  cairo_set_line_width(cr, 2.0);
+
+  cairo_set_source_rgb(cr, 0.100, 0.50, 0.32); // Color verde raro -> cambiar
+  
+  cairo_arc(cr, miCirculo.x, miCirculo.y, miCirculo.masa, 0, 2 * G_PI);
+  cairo_fill(cr);
+
+  cairo_set_source_rgb(cr, 0, 0, 0);
+  cairo_arc(cr, 100, miCirculo.y, miCirculo.masa, 0, 2 * G_PI);
+  cairo_fill(cr);
+  
+  cairo_destroy(cr);
+  gtk_widget_queue_draw(win->area);
+}
+
+static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data)
+{
+  printf("drawcb");
+  cairo_set_source_surface(cr, surface, 0, 0);
+  cairo_paint(cr);
+}
+
 // al modificar tamano de la ventana eliminando el contenido de esta
 static void
 resize_cb(GtkWidget *widget,
@@ -98,33 +123,25 @@ resize_cb(GtkWidget *widget,
   }
 }
 
-static void pintar_cuerpo()
+
+
+static void
+comenzar_simulacion()
 {
-  printf("dibujando cuerpo \n");
-  cairo_t *cr = cairo_create(surface);
-
-  // De momento aqui, pero cambiar a futuro
-  struct Circulo miCirculo;
-  
-  miCirculo.masa = 50 ;
-  miCirculo.x = 0;
-  miCirculo.y = 0;
-
-  cairo_set_source_rgb(cr, 0.100, 0.50, 0.32); // Color verde raro -> cambiar
-  cairo_set_line_width(cr, 2.0);
-  cairo_arc(cr, miCirculo.x, miCirculo.y, miCirculo.masa, 0, 2 * G_PI);
-  cairo_fill(cr);
-  cairo_destroy(cr);
-  gtk_widget_queue_draw(win->area);
+  printf("Simulacion comenzada");
 }
 
-static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data)
+static void
+finalizar_simulacion()
 {
-  printf("drawcb");
-  cairo_set_source_surface(cr, surface, 0, 0);
-  cairo_paint(cr);
+  printf("Simulacion finalizada");
 }
 
+static void
+anadir_cuerpo()
+{
+  printf("Se añadio un cuerpo");
+}
 
 static void
 sfg_main_window_class_init(SfgMainWindowClass *class)
@@ -141,7 +158,7 @@ sfg_main_window_class_init(SfgMainWindowClass *class)
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), comenzar_simulacion);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), finalizar_simulacion);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), anadir_cuerpo);
-  gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), pintar_cuerpo);
+  //gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), pintar_cuerpo);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), resize_cb);
 }
 
