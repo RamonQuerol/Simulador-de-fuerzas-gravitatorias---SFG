@@ -15,9 +15,9 @@ struct _SfgMainWindow
 
 struct Circulo
 {
-  int masa;
-  int x;
-  int y;
+  double masa;
+  double x;
+  double y;
 };
 
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
@@ -85,8 +85,8 @@ resize_cb(GtkWidget *widget,
 
     /* Initialize the surface to white */
     clear_surface();
+
   }
-  printf("RESIZE");
 }
 
 static void pintar_cuerpo()
@@ -98,8 +98,8 @@ static void pintar_cuerpo()
   struct Circulo miCirculo;
   
   miCirculo.masa = 50 ;
-  miCirculo.x = 100;
-  miCirculo.y = 200;
+  miCirculo.x = 0;
+  miCirculo.y = 0;
 
   cairo_set_source_rgb(cr, 0.100, 0.50, 0.32); // Color verde raro -> cambiar
   cairo_set_line_width(cr, 2.0);
@@ -111,6 +111,7 @@ static void pintar_cuerpo()
 
 static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data)
 {
+  printf("drawcb");
   cairo_set_source_surface(cr, surface, 0, 0);
   cairo_paint(cr);
 }
