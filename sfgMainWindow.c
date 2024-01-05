@@ -34,14 +34,12 @@ struct Cuerpo
 
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
-int numCuerpos=0;
+int numCuerpos = 0;
 int ancho;
 int alto;
 static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
-struct Circulo *miCirculo;  // puntero al array de circulos
-int anadido=0;
-
+struct Circulo *miCirculo;          // puntero al array de circulos
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -76,20 +74,21 @@ static void pintar_cuerpos()
   clear_surface();
   cairo_t *cr = cairo_create(surface);
   cairo_set_line_width(cr, 2.0);
-  
-  for (int i = 0; i < numCuerpos; i++) {
-    cairo_set_source_rgb(cr, miCirculo[i].r, miCirculo[i].g, miCirculo[i].b); 
-    cairo_arc(cr, miCirculo[i].x*ancho, miCirculo[i].y*alto, miCirculo[i].masa, 0, 2 * G_PI);
-    cairo_fill(cr);  
+
+  for (int i = 0; i < numCuerpos; i++)
+  {
+    cairo_set_source_rgb(cr, miCirculo[i].r, miCirculo[i].g, miCirculo[i].b);
+    cairo_arc(cr, miCirculo[i].x * ancho, miCirculo[i].y * alto, miCirculo[i].masa, 0, 2 * G_PI);
+    cairo_fill(cr);
   }
-  
+
   cairo_destroy(cr);
   gtk_widget_queue_draw(win->area);
 }
 
 static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data)
 {
- // printf("drawcb");
+  // printf("drawcb");
   ancho = width;
   alto = height;
   cairo_set_source_surface(cr, surface, 0, 0);
@@ -116,7 +115,7 @@ resize_cb(GtkWidget *widget,
                                                  gtk_widget_get_width(widget),
                                                  gtk_widget_get_height(widget));
 
-      pintar_cuerpos();
+    pintar_cuerpos();
   }
 }
 
@@ -129,31 +128,64 @@ comenzar_simulacion()
 static void
 finalizar_simulacion()
 {
-  printf("Simulacion finalizada");
+  // printf("Simulacion finalizada");
+  // free(miCirculo);
+  // miCirculo = NULL;
+  // numCuerpos=0;
+  // pintar_cuerpos();
+  printf("Anade un cuerpo \n");
+  // Creacion de cuerpo
+  struct Circulo *tempPointer = NULL; // Puntero temporal para no perder antiguos punteros en caso de fallos con realloc
+  int numCuerposNuevo = numCuerpos + 1;
+  if ((tempPointer = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo)*numCuerposNuevo)) == NULL)
+  {
+    perror("error al hacer realloc");
+    return;
+  }
+  
+  miCirculo = tempPointer;
+  //los valores los introduce el usuario
+  miCirculo[numCuerpos].masa = 20;
+  miCirculo[numCuerpos].x = 0.500;
+  miCirculo[numCuerpos].y = 0.500;
+
+  miCirculo[numCuerpos].r = 0;
+  miCirculo[numCuerpos].g = 0;
+  miCirculo[numCuerpos].b = 0;
+
+  numCuerpos++;
+  pintar_cuerpos();
 }
 
 static void
 anadir_cuerpo()
 {
-  if(numCuerpos){
-    free(miCirculo);
-  }
-  printf("Se anade conjunto de cuerpos");
+
+  printf("Se anade conjunto de cuerpos \n");
+  struct Circulo *tempPointer = NULL; // Puntero temporal para no perder antiguos punteros en caso de fallos con realloc
   srand((unsigned int)time(NULL));
+  int numCuerposNuevo = numCuerpos + 5;
 
-  //Creacion de array de circulos
-  numCuerpos=5;
-  miCirculo = malloc(numCuerpos * sizeof(struct Circulo));
-  for (int i = 0; i < numCuerpos; i++) {
-    miCirculo[i].masa=50;  
-    miCirculo[i].x=((double)rand() / RAND_MAX);  
-    miCirculo[i].y=((double)rand() / RAND_MAX); 
-
-    miCirculo[i].r=(double)rand() / RAND_MAX;
-    miCirculo[i].g=(double)rand() / RAND_MAX; 
-    miCirculo[i].b=(double)rand() / RAND_MAX;    
+  // Creacion de array de circulos
+  if ((tempPointer = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo) * numCuerposNuevo)) == NULL)
+  {
+    perror("error al hacer realloc");
+    return;
   }
-  anadido=1;
+
+  miCirculo = tempPointer;
+  // miCirculo = malloc(numCuerpos * sizeof(struct Circulo));
+  for (int i = numCuerpos; i < numCuerposNuevo; i++)
+  {
+    miCirculo[i].masa = rand() % 20 + 5;
+    miCirculo[i].x = ((double)rand() / RAND_MAX);
+    miCirculo[i].y = ((double)rand() / RAND_MAX);
+
+    miCirculo[i].r = (double)rand() / RAND_MAX;
+    miCirculo[i].g = (double)rand() / RAND_MAX;
+    miCirculo[i].b = (double)rand() / RAND_MAX;
+  }
+  numCuerpos = numCuerposNuevo;
   pintar_cuerpos();
 }
 
