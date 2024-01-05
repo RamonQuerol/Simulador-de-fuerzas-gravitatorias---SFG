@@ -10,6 +10,7 @@ struct _SfgMainWindow
   GtkWidget *comenzarButton;
   GtkWidget *pararButton;
   GtkWidget *anadirButton;
+  GtkWidget *menuButton;
   GtkWidget *area;
 };
 
@@ -46,7 +47,15 @@ anadir_cuerpo()
 static void
 sfg_main_window_init(SfgMainWindow *win)
 {
+  GtkBuilder *builder;
+  GMenuModel *menu;
+
   gtk_widget_init_template(GTK_WIDGET(win));
+
+  builder = gtk_builder_new_from_resource ("/com/git/sfg/menuButtonOpciones.ui");
+  menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
+  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (win->menuButton), menu);
+  g_object_unref (builder);
 }
 
 // borra el contenido de la ventana
@@ -116,15 +125,17 @@ static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gp
   cairo_paint(cr);
 }
 
+
 static void
 sfg_main_window_class_init(SfgMainWindowClass *class)
 {
   gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
                                               "/com/git/sfg/mainWindow.ui");
 
-  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, comenzarButton);
-  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, pararButton);
-  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, anadirButton);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, comenzarButton);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, pararButton);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, anadirButton);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, menuButton);
   gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, area);
 
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), comenzar_simulacion);

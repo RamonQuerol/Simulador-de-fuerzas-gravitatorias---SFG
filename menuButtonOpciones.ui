@@ -3,14 +3,26 @@
   <menu id="menu">
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Preferences</attribute>
-        <attribute name="action">app.preferences</attribute>
+        <attribute name="label" translatable="yes">_Añadir multiples cuerpos</attribute>
+        <attribute name="action">app.anadirmultiples</attribute>
       </item>
     </section>
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Quit</attribute>
-        <attribute name="action">app.quit</attribute>
+        <attribute name="label" translatable="yes">_Ajustes de la simulacion</attribute>
+        <attribute name="action">app.ajustes</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Ver lista de cuerpos</attribute>
+        <attribute name="action">app.lista</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Salir</attribute>
+        <attribute name="action">app.salir</attribute>
       </item>
     </section>
   </menu>

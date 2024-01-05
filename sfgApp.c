@@ -13,6 +13,57 @@ G_DEFINE_TYPE(SfgApp, sfg_app, GTK_TYPE_APPLICATION);
 static void
 sfg_app_init (SfgApp *app)
 {
+
+}
+
+static void
+anadir_multiples_activated (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       app)
+{
+ 
+}
+
+static void
+ver_lista_activated (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       app)
+{
+ 
+}
+
+static void
+ajustes_activated(GSimpleAction *action,
+                       GVariant      *parameter,
+                       gpointer       app){
+
+  
+}
+
+static void
+salir_activated (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       app)
+{
+  g_application_quit (G_APPLICATION (app));
+}
+
+static GActionEntry app_entries[] =
+{
+  { "anadirmultiples", anadir_multiples_activated, NULL, NULL, NULL},
+  { "ajustes", ajustes_activated, NULL, NULL, NULL },
+  { "lista", ver_lista_activated, NULL, NULL, NULL},
+  { "salir", salir_activated, NULL, NULL, NULL }
+};
+
+static void
+sfg_app_startup (GApplication *app)
+{
+  G_APPLICATION_CLASS (sfg_app_parent_class)->startup (app);
+
+  g_action_map_add_action_entries (G_ACTION_MAP (app),
+                                   app_entries, G_N_ELEMENTS (app_entries),
+                                   app);
 }
 
 static void
@@ -51,6 +102,7 @@ sfg_app_class_init (SfgAppClass *class)
 {
   G_APPLICATION_CLASS (class)->activate = sfg_app_activate;
   G_APPLICATION_CLASS (class)->open = sfg_app_open;
+  G_APPLICATION_CLASS (class)->startup = sfg_app_startup;
 }
 
 SfgApp *
