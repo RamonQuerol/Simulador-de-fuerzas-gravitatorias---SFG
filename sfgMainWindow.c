@@ -19,9 +19,13 @@ struct Circulo
   double masa;
   double x;
   double y;
+  double r;
+  double g;
+  double b;
 };
 
-struct Cuerpo{
+struct Cuerpo
+{
   float masa;
   float velocidad;
   float posicionX;
@@ -30,9 +34,13 @@ struct Cuerpo{
 
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
+int numCuerpos=0;
+int ancho;
+int alto;
 static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
-
+struct Circulo *miCirculo;  // puntero al array de circulos
+int anadido=0;
 
 
 static void
@@ -43,10 +51,10 @@ sfg_main_window_init(SfgMainWindow *win)
 
   gtk_widget_init_template(GTK_WIDGET(win));
 
-  builder = gtk_builder_new_from_resource ("/com/git/sfg/menuButtonOpciones.ui");
-  menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
-  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (win->menuButton), menu);
-  g_object_unref (builder);
+  builder = gtk_builder_new_from_resource("/com/git/sfg/menuButtonOpciones.ui");
+  menu = G_MENU_MODEL(gtk_builder_get_object(builder, "menu"));
+  gtk_menu_button_set_menu_model(GTK_MENU_BUTTON(win->menuButton), menu);
+  g_object_unref(builder);
 }
 
 // borra el contenido de la ventana
@@ -65,26 +73,15 @@ clear_surface(void)
 
 static void pintar_cuerpos()
 {
-  printf("dibujando cuerpo \n");
+  clear_surface();
   cairo_t *cr = cairo_create(surface);
-
-  // De momento aqui, pero cambiar a futuro
-  struct Circulo miCirculo;
-  
-  miCirculo.masa = 50 ;
-  miCirculo.x = 0;
-  miCirculo.y = 0;
-
   cairo_set_line_width(cr, 2.0);
-
-  cairo_set_source_rgb(cr, 0.100, 0.50, 0.32); // Color verde raro -> cambiar
   
-  cairo_arc(cr, miCirculo.x, miCirculo.y, miCirculo.masa, 0, 2 * G_PI);
-  cairo_fill(cr);
-
-  cairo_set_source_rgb(cr, 0, 0, 0);
-  cairo_arc(cr, 100, miCirculo.y, miCirculo.masa, 0, 2 * G_PI);
-  cairo_fill(cr);
+  for (int i = 0; i < numCuerpos; i++) {
+    cairo_set_source_rgb(cr, miCirculo[i].r, miCirculo[i].g, miCirculo[i].b); 
+    cairo_arc(cr, miCirculo[i].x*ancho, miCirculo[i].y*alto, miCirculo[i].masa, 0, 2 * G_PI);
+    cairo_fill(cr);  
+  }
   
   cairo_destroy(cr);
   gtk_widget_queue_draw(win->area);
@@ -92,7 +89,9 @@ static void pintar_cuerpos()
 
 static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data)
 {
-  printf("drawcb");
+ // printf("drawcb");
+  ancho = width;
+  alto = height;
   cairo_set_source_surface(cr, surface, 0, 0);
   cairo_paint(cr);
 }
@@ -117,13 +116,9 @@ resize_cb(GtkWidget *widget,
                                                  gtk_widget_get_width(widget),
                                                  gtk_widget_get_height(widget));
 
-    /* Initialize the surface to white */
-    clear_surface();
-
+      pintar_cuerpos();
   }
 }
-
-
 
 static void
 comenzar_simulacion()
@@ -140,7 +135,26 @@ finalizar_simulacion()
 static void
 anadir_cuerpo()
 {
-  printf("Se añadio un cuerpo");
+  if(numCuerpos){
+    free(miCirculo);
+  }
+  printf("Se anade conjunto de cuerpos");
+  srand((unsigned int)time(NULL));
+
+  //Creacion de array de circulos
+  numCuerpos=5;
+  miCirculo = malloc(numCuerpos * sizeof(struct Circulo));
+  for (int i = 0; i < numCuerpos; i++) {
+    miCirculo[i].masa=50;  
+    miCirculo[i].x=((double)rand() / RAND_MAX);  
+    miCirculo[i].y=((double)rand() / RAND_MAX); 
+
+    miCirculo[i].r=(double)rand() / RAND_MAX;
+    miCirculo[i].g=(double)rand() / RAND_MAX; 
+    miCirculo[i].b=(double)rand() / RAND_MAX;    
+  }
+  anadido=1;
+  pintar_cuerpos();
 }
 
 static void
@@ -149,16 +163,16 @@ sfg_main_window_class_init(SfgMainWindowClass *class)
   gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
                                               "/com/git/sfg/mainWindow.ui");
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, comenzarButton);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, pararButton);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, anadirButton);
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgMainWindow, menuButton);
+  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, comenzarButton);
+  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, pararButton);
+  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, anadirButton);
+  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, menuButton);
   gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgMainWindow, area);
 
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), comenzar_simulacion);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), finalizar_simulacion);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), anadir_cuerpo);
-  //gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), pintar_cuerpo);
+  // gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), pintar_cuerpo);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), resize_cb);
 }
 
