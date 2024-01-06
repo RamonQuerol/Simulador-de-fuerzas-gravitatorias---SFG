@@ -116,6 +116,8 @@ resize_cb(GtkWidget *widget,
 static void
 comenzar_simulacion()
 {
+
+  sfg_simulador_destroy();
   printf("Simulacion comenzada");
 }
 
@@ -150,20 +152,22 @@ finalizar_simulacion()
   cuerpoSimulacion->velocidadX = (float)(rand() % 500);
   cuerpoSimulacion->velocidadY = (float)(rand() % 500);
 
-
+  sfg_simulador_addCuerpos(1, cuerpoSimulacion);
 
   miCirculo = tempPointer;
 
   //los valores los introduce el usuario
-  miCirculo[numCuerpos].masa = 20;
-  miCirculo[numCuerpos].x = 0.500;
-  miCirculo[numCuerpos].y = 0.500;
+  miCirculo[numCuerpos].masa = cuerpoSimulacion->masa;
+  miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX/1000;
+  miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY/1000;
 
   miCirculo[numCuerpos].r = 0;
   miCirculo[numCuerpos].g = 0;
   miCirculo[numCuerpos].b = 0;
 
   numCuerpos++;
+
+  free(cuerpoSimulacion);
   pintar_cuerpos();
 }
 
@@ -223,6 +227,7 @@ sfg_main_window_new(SfgApp *app)
 {
   win = g_object_new(SFG_MAIN_WINDOW_TYPE, "application", app, NULL);
   gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA(win->area), draw_cb, NULL, NULL);
+  sfg_simulador_init();
   return win;
 }
 
