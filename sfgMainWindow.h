@@ -2,6 +2,7 @@
 
 #include <gtk/gtk.h>
 #include "sfgApp.h"
+#include "sfgSimulador.h"
 
 
 #define SFG_MAIN_WINDOW_TYPE (sfg_main_window_get_type ())

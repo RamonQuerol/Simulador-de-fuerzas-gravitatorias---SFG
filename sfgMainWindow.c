@@ -2,6 +2,7 @@
 
 #include "sfgApp.h"
 #include "sfgMainWindow.h"
+#include "sfgSimulador.h"
 
 struct _SfgMainWindow
 {
@@ -24,13 +25,6 @@ struct Circulo
   double b;
 };
 
-struct Cuerpo
-{
-  float masa;
-  float velocidad;
-  float posicionX;
-  float posicionY;
-};
 
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
@@ -143,7 +137,23 @@ finalizar_simulacion()
     return;
   }
   
+  struct Cuerpo *cuerpoSimulacion = NULL;//Es el cuerpo que se mandará al simulador para guardar sus caracteristicas
+  
+  if((cuerpoSimulacion = (struct Cuerpo *)malloc(sizeof(struct Cuerpo)))==NULL){
+    perror("error al hacer malloc durante la creación de la variable temporal de cuerpo");
+    return;
+  }
+
+  cuerpoSimulacion->masa = (float)(rand() % 20 + 5);
+  cuerpoSimulacion->posicionX = (float)(rand() % 1000);
+  cuerpoSimulacion->posicionY = (float)(rand() % 1000);
+  cuerpoSimulacion->velocidadX = (float)(rand() % 500);
+  cuerpoSimulacion->velocidadY = (float)(rand() % 500);
+
+
+
   miCirculo = tempPointer;
+
   //los valores los introduce el usuario
   miCirculo[numCuerpos].masa = 20;
   miCirculo[numCuerpos].x = 0.500;
