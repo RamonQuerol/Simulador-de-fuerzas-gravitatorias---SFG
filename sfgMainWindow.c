@@ -203,6 +203,18 @@ anadir_cuerpo()
   pintar_cuerpos();
 }
 
+//Libera la memoria contenida en la diversas parte del programa
+static void sfg_main_window_destroy(){
+  
+  free(miCirculo);
+
+  sfg_simulador_destroy();
+
+  gtk_widget_dispose_template(win, SFG_MAIN_WINDOW_TYPE);
+  gtk_window_destroy((GtkWindow *)win);
+}
+
+
 static void
 sfg_main_window_class_init(SfgMainWindowClass *class)
 {
@@ -219,6 +231,7 @@ sfg_main_window_class_init(SfgMainWindowClass *class)
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), finalizar_simulacion);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), anadir_cuerpo);
   // gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), pintar_cuerpo);
+  gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), sfg_main_window_destroy);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), resize_cb);
 }
 
