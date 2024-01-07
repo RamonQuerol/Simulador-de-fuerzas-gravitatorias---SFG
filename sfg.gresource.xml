@@ -4,5 +4,6 @@
     <file preprocess="xml-stripblanks">mainWindow.ui</file>
     <file preprocess="xml-stripblanks">menuButtonOpciones.ui</file>
     <file preprocess="xml-stripblanks">amcWindow.ui</file>
+    <file preprocess="xml-stripblanks">aucWindow.ui</file>
   </gresource>
 </gresources>

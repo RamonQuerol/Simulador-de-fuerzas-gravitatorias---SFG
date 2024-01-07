@@ -14,7 +14,6 @@ struct _SfgAmcWindow
 
 G_DEFINE_TYPE(SfgAmcWindow, sfg_amc_window, GTK_TYPE_DIALOG);
 SfgAmcWindow *amc_win;
-SfgMainWindow *main_win;
 
 // Función que maneja la señal de activación de la entrada
 static void obtenerNumero(GtkEntry *entry, gpointer user_data)

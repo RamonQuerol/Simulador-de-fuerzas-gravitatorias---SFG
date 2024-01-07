@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="SfgAucWindow" parent="GtkDialog">
+    <property name="title" translatable="yes">Añadir Cuerpo</property> 
+    <property name="resizable">0</property>
+    <property name="modal">1</property>
+    <child internal-child="content_area">     
+      <object class="GtkBox" id="content_area">
+        <child>
+          <object class="GtkLabel" id="labelMasa">
+            <property name="label">Introduzca la masa del cuerpo y pulse ENTER</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="masa">
+            <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+            <!-- <property name="text">0</property> -->
+            <signal name="activate" handler="obtenerMasa" swapped="no"/>
+          </object>
+        </child> 
+        <child>
+          <object class="GtkLabel" id="labelPosx">
+            <property name="label">Introduzca la posicion x del cuerpo y pulse ENTER</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="pos_x">
+            <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+            <!-- <property name="text">0</property> -->
+            <signal name="activate" handler="obtenerPosX" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="labelPosY">
+            <property name="label">Introduzca la posicion y del cuerpo y pulse ENTER</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="pos_y">
+            <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+            <!-- <property name="text">0</property> -->
+            <signal name="activate" handler="obtenerPosY" swapped="no"/>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="labelVelX">
+            <property name="label">Introduzca la velocidad en eje X del cuerpo y pulse ENTER</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="vel_x">
+            <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+            <!-- <property name="text">0</property> -->
+            <signal name="activate" handler="obtenerVelX" swapped="no"/>
+          </object>
+        </child> 
+        <child>
+          <object class="GtkLabel" id="labelVelY">
+            <property name="label">Introduzca la velocidad en eje Y del cuerpo y pulse ENTER</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="vel_y">
+            <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+            <!-- <property name="text">0</property> -->
+            <signal name="activate" handler="obtenerVelY" swapped="no"/>
+          </object>
+        </child>       
+        <!-- <child>
+          <object class="GtkButton" id="botonConfirmar">
+            <property name="label">Confirmar</property>
+            <signal name="clicked" handler="confirmar" swapped="no"/>
+          </object>
+        </child> -->
+      </object>
+    </child>
+  </template>
+</interface>

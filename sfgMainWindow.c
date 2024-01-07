@@ -2,6 +2,7 @@
 
 #include "sfgApp.h"
 #include "sfgMainWindow.h"
+#include "sfgAucWindow.h"
 #include "sfgSimulador.h"
 
 struct _SfgMainWindow
@@ -111,7 +112,7 @@ resize_cb(GtkWidget *widget,
   }
 }
 
-static void add_cuerpo()
+void add_cuerpo(float masa, float posX, float posY, float velX, float velY)
 {
   printf("Anade un cuerpo \n");
 
@@ -132,11 +133,11 @@ static void add_cuerpo()
     return;
   }
 
-  cuerpoSimulacion->masa = (float)(rand() % 20 + 5);
-  cuerpoSimulacion->posicionX = (float)(rand() % 1000);
-  cuerpoSimulacion->posicionY = (float)(rand() % 1000);
-  cuerpoSimulacion->velocidadX = (float)(rand() % 500);
-  cuerpoSimulacion->velocidadY = (float)(rand() % 500);
+  cuerpoSimulacion->masa = masa;
+  cuerpoSimulacion->posicionX = posX;
+  cuerpoSimulacion->posicionY = posY;
+  cuerpoSimulacion->velocidadX = velX;
+  cuerpoSimulacion->velocidadY = velY;
 
   sfg_simulador_addCuerpos(1, cuerpoSimulacion);
 
@@ -199,12 +200,14 @@ static void
 finalizar_simulacion()
 {
   printf("Simulacion finalizada");
-  add_cuerpo();
 }
 
 static void
 anadir_cuerpo()
 {
+  SfgAucWindow *auc = sfg_auc_window_new(SFG_MAIN_WINDOW(win));
+  gtk_window_set_default_size(GTK_WINDOW(auc), 400,300);
+  gtk_window_present(GTK_WINDOW(auc));
 }
 
 // Libera la memoria contenida en la diversas parte del programa
