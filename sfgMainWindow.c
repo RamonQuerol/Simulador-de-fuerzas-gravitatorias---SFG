@@ -25,7 +25,6 @@ struct Circulo
   double b;
 };
 
-
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
 int numCuerpos = 0;
@@ -33,7 +32,7 @@ int ancho;
 int alto;
 static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
-struct Circulo *miCirculo;          // puntero al array de circulos
+struct Circulo *miCirculo; // puntero al array de circulos
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -89,7 +88,6 @@ static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gp
   cairo_paint(cr);
 }
 
-// al modificar tamano de la ventana eliminando el contenido de esta
 static void
 resize_cb(GtkWidget *widget,
           int width,
@@ -113,35 +111,23 @@ resize_cb(GtkWidget *widget,
   }
 }
 
-static void
-comenzar_simulacion()
+static void add_cuerpo()
 {
-
-  sfg_simulador_destroy();
-  printf("Simulacion comenzada");
-}
-
-static void
-finalizar_simulacion()
-{
-  // printf("Simulacion finalizada");
-  // free(miCirculo);
-  // miCirculo = NULL;
-  // numCuerpos=0;
-  // pintar_cuerpos();
   printf("Anade un cuerpo \n");
+
   // Creacion de cuerpo
   struct Circulo *tempPointer = NULL; // Puntero temporal para no perder antiguos punteros en caso de fallos con realloc
   int numCuerposNuevo = numCuerpos + 1;
-  if ((tempPointer = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo)*numCuerposNuevo)) == NULL)
+  if ((tempPointer = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo) * numCuerposNuevo)) == NULL)
   {
     perror("error al hacer realloc");
     return;
   }
-  
-  struct Cuerpo *cuerpoSimulacion = NULL;//Es el cuerpo que se mandará al simulador para guardar sus caracteristicas
-  
-  if((cuerpoSimulacion = (struct Cuerpo *)malloc(sizeof(struct Cuerpo)))==NULL){
+
+  struct Cuerpo *cuerpoSimulacion = NULL; // Es el cuerpo que se mandará al simulador para guardar sus caracteristicas
+
+  if ((cuerpoSimulacion = (struct Cuerpo *)malloc(sizeof(struct Cuerpo))) == NULL)
+  {
     perror("error al hacer malloc durante la creación de la variable temporal de cuerpo");
     return;
   }
@@ -156,10 +142,10 @@ finalizar_simulacion()
 
   miCirculo = tempPointer;
 
-  //los valores los introduce el usuario
+  // los valores los introduce el usuario
   miCirculo[numCuerpos].masa = cuerpoSimulacion->masa;
-  miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX/1000;
-  miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY/1000;
+  miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX / 1000;
+  miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY / 1000;
 
   miCirculo[numCuerpos].r = 0;
   miCirculo[numCuerpos].g = 0;
@@ -171,8 +157,7 @@ finalizar_simulacion()
   pintar_cuerpos();
 }
 
-static void
-anadir_cuerpo()
+static void add_cuerpos()
 {
 
   printf("Se anade conjunto de cuerpos \n");
@@ -188,7 +173,6 @@ anadir_cuerpo()
   }
 
   miCirculo = tempPointer;
-  // miCirculo = malloc(numCuerpos * sizeof(struct Circulo));
   for (int i = numCuerpos; i < numCuerposNuevo; i++)
   {
     miCirculo[i].masa = rand() % 20 + 5;
@@ -203,9 +187,31 @@ anadir_cuerpo()
   pintar_cuerpos();
 }
 
-//Libera la memoria contenida en la diversas parte del programa
-static void sfg_main_window_destroy(){
-  
+// Funciones que se llaman al hacer click en botones
+static void
+comenzar_simulacion()
+{
+  sfg_simulador_destroy();
+  printf("Simulacion comenzada");
+}
+
+static void
+finalizar_simulacion()
+{
+  printf("Simulacion finalizada");
+  add_cuerpo();
+}
+
+static void
+anadir_cuerpo()
+{
+  add_cuerpos();
+}
+
+// Libera la memoria contenida en la diversas parte del programa
+static void sfg_main_window_destroy()
+{
+
   free(miCirculo);
 
   sfg_simulador_destroy();
@@ -213,7 +219,6 @@ static void sfg_main_window_destroy(){
   gtk_widget_dispose_template(win, SFG_MAIN_WINDOW_TYPE);
   gtk_window_destroy((GtkWindow *)win);
 }
-
 
 static void
 sfg_main_window_class_init(SfgMainWindowClass *class)
