@@ -157,13 +157,13 @@ static void add_cuerpo()
   pintar_cuerpos();
 }
 
-static void add_cuerpos()
+void add_cuerpos(int numCuerposAdd)
 {
 
   printf("Se anade conjunto de cuerpos \n");
   struct Circulo *tempPointer = NULL; // Puntero temporal para no perder antiguos punteros en caso de fallos con realloc
   srand((unsigned int)time(NULL));
-  int numCuerposNuevo = numCuerpos + 5;
+  int numCuerposNuevo = numCuerpos + numCuerposAdd;
 
   // Creacion de array de circulos
   if ((tempPointer = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo) * numCuerposNuevo)) == NULL)
@@ -205,7 +205,6 @@ finalizar_simulacion()
 static void
 anadir_cuerpo()
 {
-  add_cuerpos();
 }
 
 // Libera la memoria contenida en la diversas parte del programa

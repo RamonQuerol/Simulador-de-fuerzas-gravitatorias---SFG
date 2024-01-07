@@ -14,7 +14,7 @@
         <child>
           <object class="GtkEntry" id="numCuerpos">
             <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
-            <property name="text">6</property>
+            <!-- <property name="text">0</property> -->
             <signal name="activate" handler="obtenerNumero" swapped="no"/>
           </object>
         </child>       

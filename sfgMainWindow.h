@@ -11,4 +11,5 @@ G_DECLARE_FINAL_TYPE (SfgMainWindow, sfg_main_window, SFG, MAIN_WINDOW, GtkAppli
 
 SfgMainWindow       *sfg_main_window_new          (SfgApp *app);
 void                    sfg_main_window_open         (SfgMainWindow *win,
-                                                         GFile            *file);
+                                                         GFile            *file);    
+void                    add_cuerpos               (int num);
