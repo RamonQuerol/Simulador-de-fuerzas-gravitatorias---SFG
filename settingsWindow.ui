@@ -15,7 +15,7 @@
             
             <child>
               <object class="GtkLabel" id="labelTiempo">
-                <property name="label">Introduzca el tiempo que pasa en la simulación por cada segundo real</property>
+                <property name="label">Introduzca el tiempo que pasa en la simulación por cada ciclo</property>
                 <property name="margin-end">5</property>
               </object>
             </child>
@@ -58,7 +58,7 @@
             
             <child>
               <object class="GtkLabel" id="labelDistancia">
-                <property name="label">Introduzca la distancia en la simulación por cada pixel</property>
+                <property name="label">Introduzca la distancia real de la pantalla</property>
                 <property name="margin-end">5</property>
               </object>
             </child>
