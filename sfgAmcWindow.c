@@ -38,6 +38,7 @@ static void
 sfg_amc_window_init(SfgAmcWindow *win)
 {
     gtk_widget_init_template(GTK_WIDGET(win));
+    cadena = NULL;
 }
 
 // Funcion que se llama al cerrar la ventana para liberar recursos

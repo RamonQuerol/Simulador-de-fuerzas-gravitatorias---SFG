@@ -18,14 +18,13 @@ struct _SfgMainWindow
 
 struct Circulo
 {
-  double masa;
+  int tam;
   double x;
   double y;
   double r;
   double g;
   double b;
 };
-
 
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
@@ -36,7 +35,7 @@ static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
 struct Circulo *miCirculo; // puntero al array de circulos
 
-int simulacionActivada = 0; //Variable global que activa o desactiva la simulacion
+int simulacionActivada = 0; // Variable global que activa o desactiva la simulacion
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -74,9 +73,9 @@ static void pintar_cuerpos()
 
   for (int i = 0; i < numCuerpos; i++)
   {
-    //printf("He pintado en %f %f\n", miCirculo[i].x, miCirculo[i].y);
+    // printf("He pintado en %f %f\n", miCirculo[i].x, miCirculo[i].y);
     cairo_set_source_rgb(cr, miCirculo[i].r, miCirculo[i].g, miCirculo[i].b);
-    cairo_arc(cr, miCirculo[i].x * ancho, miCirculo[i].y * alto, miCirculo[i].masa, 0, 2 * G_PI);
+    cairo_arc(cr, miCirculo[i].x * ancho, miCirculo[i].y * alto, miCirculo[i].tam, 0, 2 * G_PI);
     cairo_fill(cr);
   }
 
@@ -120,16 +119,6 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
 {
   printf("Anade un cuerpo  \n");
 
-  if (g_strcmp0(cadenaTam, "Pequenio") == 0) {
-
-    } else if((g_strcmp0(cadenaTam, "Normal") == 0)) {
-
-    }else if((g_strcmp0(cadenaTam, "Grande") == 0)) {
-
-    }else{
-
-    }
-
   // Creacion de cuerpo
   struct Circulo *tempPointer = NULL; // Puntero temporal para no perder antiguos punteros en caso de fallos con realloc
   int numCuerposNuevo = numCuerpos + 1;
@@ -141,7 +130,7 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
 
   struct Cuerpo *cuerpoSimulacion = NULL; // Es el cuerpo que se mandará al simulador para guardar sus caracteristicas
 
-  if((cuerpoSimulacion = (struct Cuerpo *)malloc(sizeof(struct Cuerpo))) == NULL)
+  if ((cuerpoSimulacion = (struct Cuerpo *)malloc(sizeof(struct Cuerpo))) == NULL)
   {
     perror("error al hacer malloc durante la creación de la variable temporal de cuerpo");
     return;
@@ -157,8 +146,28 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
 
   miCirculo = tempPointer;
 
+  if (g_strcmp0(cadenaTam, "Muy Pequenio") == 0)
+  {
+    miCirculo[numCuerpos].tam = 2;
+  }
+  else if (g_strcmp0(cadenaTam, "Pequenio") == 0)
+  {
+    miCirculo[numCuerpos].tam = 5;
+  }
+  else if ((g_strcmp0(cadenaTam, "Normal") == 0))
+  {
+    miCirculo[numCuerpos].tam = 10;
+  }
+  else if ((g_strcmp0(cadenaTam, "Grande") == 0))
+  {
+    miCirculo[numCuerpos].tam = 15;
+  }
+  else
+  {
+    miCirculo[numCuerpos].tam = 20;
+  }
+
   // los valores los introduce el usuario
-  miCirculo[numCuerpos].masa = cuerpoSimulacion->masa;
   miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX / 1000;
   miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY / 1000;
 
@@ -190,7 +199,7 @@ void add_cuerpos(int numCuerposAdd)
   miCirculo = tempPointer;
   for (int i = numCuerpos; i < numCuerposNuevo; i++)
   {
-    miCirculo[i].masa = rand() % 20 + 5;
+    miCirculo[i].tam = rand() % 20 + 5;
     miCirculo[i].x = ((double)rand() / RAND_MAX);
     miCirculo[i].y = ((double)rand() / RAND_MAX);
 
@@ -206,48 +215,45 @@ void add_cuerpos(int numCuerposAdd)
 static void
 comenzar_simulacion()
 {
-    //anadirGordo();
+  // anadirGordo();
 
   printf("Simulacion comenzada");
 
   Cuerpo *cuerposSimulacion;
   int i;
 
-  if ((cuerposSimulacion = malloc(sizeof(Cuerpo) * numCuerpos))==NULL)
+  if ((cuerposSimulacion = malloc(sizeof(Cuerpo) * numCuerpos)) == NULL)
   {
     perror("No se pudo iniciar la simulacion ya que no hay suficiente memoria para guardar los resultados");
     return;
   }
   simulacionActivada = 1;
-  
+
   int cuentaCosas = 0;
   int segundoCuentaCosas = 0;
 
-
-  while(cuentaCosas<100){
-
-    
+  while (cuentaCosas < 100)
+  {
 
     sfg_simular(1000, cuerposSimulacion);
 
-
-    //if(cuentaCosas >100){
-      ++segundoCuentaCosas;
-      //printf("%d ", segundoCuentaCosas);
-    for(i = 0; i<numCuerpos; ++i){
-      //miCirculo[i].masa = cuerposSimulacion[i].masa;
-      miCirculo[i].x = cuerposSimulacion[i].posicionX/1000;
-      miCirculo[i].y = cuerposSimulacion[i].posicionY/1000; 
+    // if(cuentaCosas >100){
+    ++segundoCuentaCosas;
+    // printf("%d ", segundoCuentaCosas);
+    for (i = 0; i < numCuerpos; ++i)
+    {
+      // miCirculo[i].masa = cuerposSimulacion[i].masa;
+      miCirculo[i].x = cuerposSimulacion[i].posicionX / 1000;
+      miCirculo[i].y = cuerposSimulacion[i].posicionY / 1000;
     }
 
     pintar_cuerpos();
-    //cuentaCosas = 0;
-    //}
+    // cuentaCosas = 0;
+    // }
 
     cuentaCosas++;
   }
 }
-
 
 static void
 finalizar_simulacion()
@@ -259,7 +265,7 @@ static void
 anadir_cuerpo()
 {
   SfgAucWindow *auc = sfg_auc_window_new(SFG_MAIN_WINDOW(win));
-  gtk_window_set_default_size(GTK_WINDOW(auc), 400,300);
+  gtk_window_set_default_size(GTK_WINDOW(auc), 400, 300);
   gtk_window_present(GTK_WINDOW(auc));
 }
 

@@ -14,7 +14,7 @@
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
               <object class="GtkLabel" id="labelMasa">
-                <property name="label">Introduzca la masa del cuerpo y pulse ENTER</property>
+                <property name="label">Introduzca la masa del cuerpo</property>
                 <property name="margin-end">95</property>
               </object>
             </child>
@@ -34,7 +34,7 @@
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
               <object class="GtkLabel" id="labelPosx">
-                <property name="label">Introduzca la posicion x del cuerpo y pulse ENTER</property>
+                <property name="label">Introduzca la posicion x del cuerpo</property>
                 <property name="margin-end">70</property>
               </object>
             </child>
@@ -42,7 +42,7 @@
               <object class="GtkEntry" id="pos_x">
                 <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
                 <property name="margin-end">10</property>
-                <signal name="activate" handler="obtenerPosX" swapped="no"/>
+                <signal name="changed" handler="obtenerPosX" swapped="no"/>
               </object>
             </child>
           </object>
@@ -54,7 +54,7 @@
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
               <object class="GtkLabel" id="labelPosY">
-                <property name="label">Introduzca la posicion y del cuerpo y pulse ENTER</property>
+                <property name="label">Introduzca la posicion y del cuerpo</property>
                 <property name="margin-end">70</property>
               </object>
             </child>
@@ -62,7 +62,7 @@
               <object class="GtkEntry" id="pos_y">
                 <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
                 <property name="margin-end">10</property>
-                <signal name="activate" handler="obtenerPosY" swapped="no"/>
+                <signal name="changed" handler="obtenerPosY" swapped="no"/>
               </object>
             </child>
           </object>
@@ -74,7 +74,7 @@
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
               <object class="GtkLabel" id="labelVelX">
-                <property name="label">Introduzca la velocidad en eje X del cuerpo y pulse ENTER</property>
+                <property name="label">Introduzca la velocidad en eje X del cuerpo</property>
                 <property name="margin-end">30</property>
               </object>
             </child>
@@ -82,7 +82,7 @@
               <object class="GtkEntry" id="vel_x">
                 <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
                 <property name="margin-end">10</property>
-                <signal name="activate" handler="obtenerVelX" swapped="no"/>
+                <signal name="changed" handler="obtenerVelX" swapped="no"/>
               </object>
             </child>
           </object>
@@ -94,7 +94,7 @@
             <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
             <child>
               <object class="GtkLabel" id="labelVelY">
-                <property name="label">Introduzca la velocidad en eje Y del cuerpo y pulse ENTER</property>
+                <property name="label">Introduzca la velocidad en eje Y del cuerpo</property>
                 <property name="margin-end">30</property>
               </object>
             </child>
@@ -102,7 +102,7 @@
               <object class="GtkEntry" id="vel_y">
                 <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
                 <property name="margin-end">10</property>
-                <signal name="activate" handler="obtenerVelY" swapped="no"/>
+                <signal name="changed" handler="obtenerVelY" swapped="no"/>
               </object>
             </child>
           </object>
@@ -131,6 +131,15 @@
                 </items>
               </object>
             </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkButton" id="botonConfirmar">
+            <property name="label">Confirmar</property>
+            <property name="margin-start">200</property>
+            <property name="margin-end">200</property>
+            <signal name="clicked" handler="confirmar" swapped="no"/>
           </object>
         </child>
 
