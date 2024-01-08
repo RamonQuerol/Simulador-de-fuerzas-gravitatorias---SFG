@@ -18,6 +18,8 @@ struct _SfgAucWindow
 
 float masa, posX, posY, velX, velY;
 gchar *cadenaTam;
+gchar *cadenaColor;
+
 G_DEFINE_TYPE(SfgAucWindow, sfg_auc_window, GTK_TYPE_DIALOG);
 SfgAucWindow *auc_win;
 
@@ -58,12 +60,17 @@ static void obtenerTam(GtkComboBoxText *widget, gpointer user_data)
     cadenaTam = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));   
 }
 
+static void obtenerColor(GtkComboBoxText *widget, gpointer user_data)
+{    
+    cadenaColor = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));   
+}
+
 //Función que maneja la señal de clic en el botón 
 static void confirmar(GtkButton *button, gpointer user_data)
 {
     if (masa != 0 && velX != 0 && velY != 0 && cadenaTam != NULL)
     {
-        add_cuerpo(masa, posX, posY, velX, velY, cadenaTam);
+        add_cuerpo(masa, posX, posY, velX, velY, cadenaTam, cadenaColor);
     }
     gtk_window_destroy((GtkWindow *)auc_win);
 }
@@ -78,6 +85,7 @@ sfg_auc_window_init(SfgAucWindow *win)
     velX = 0;
     velY = 0;
     cadenaTam = NULL;
+    cadenaColor = NULL;
 }
 
 // Funcion que se llama al cerrar la ventana para liberar recursos
@@ -106,7 +114,8 @@ sfg_auc_window_class_init(SfgAucWindowClass *class)
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerVelX);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerVelY);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerTam);
-     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), confirmar);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerColor);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), confirmar);
 }
 
 SfgAucWindow *sfg_auc_window_new(SfgMainWindow *win)

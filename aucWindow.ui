@@ -124,6 +124,7 @@
                 <property name="margin-bottom">10</property>
                 <signal name="changed" handler="obtenerTam" swapped="no"/>
                 <items>
+                  <item translatable="yes">Muy Pequenio</item>
                   <item translatable="yes">Pequenio</item>
                   <item translatable="yes">Normal</item>
                   <item translatable="yes">Grande</item>
@@ -135,10 +136,42 @@
         </child>
 
         <child>
+          <object class="GtkBox" id="content_area7">
+            <property name="margin-start">10</property>
+            <child>
+              <object class="GtkLabel" id="labelColor">
+                <property name="label">Introduzca el color del cuerpo</property>
+                <property name="margin-end">32</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="color_combo">
+                <property name="margin-end">10</property>
+                <property name="margin-bottom">10</property>
+                <signal name="changed" handler="obtenerColor" swapped="no"/>
+                <items>
+                  <item translatable="yes">Negro</item>
+                  <item translatable="yes">Verde</item>
+                  <item translatable="yes">Rojo</item>
+                  <item translatable="yes">Amarillo</item>
+                  <item translatable="yes">Azul</item>
+                  <item translatable="yes">Naranja</item>
+                  <item translatable="yes">Morado</item>
+                  <item translatable="yes">Rosa</item>
+                  <item translatable="yes">Gris</item>
+                  <item translatable="yes">Marron</item>
+                </items>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
           <object class="GtkButton" id="botonConfirmar">
             <property name="label">Confirmar</property>
             <property name="margin-start">200</property>
             <property name="margin-end">200</property>
+            <property name="margin-bottom">10</property>
             <signal name="clicked" handler="confirmar" swapped="no"/>
           </object>
         </child>

@@ -115,7 +115,7 @@ resize_cb(GtkWidget *widget,
   }
 }
 
-void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam)
+void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam, gchar *cadenaColor)
 {
   printf("Anade un cuerpo  \n");
 
@@ -146,34 +146,44 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
 
   miCirculo = tempPointer;
 
-  if (g_strcmp0(cadenaTam, "Muy Pequenio") == 0)
-  {
+  if (g_strcmp0(cadenaTam, "Muy Pequenio") == 0) {
     miCirculo[numCuerpos].tam = 2;
-  }
-  else if (g_strcmp0(cadenaTam, "Pequenio") == 0)
-  {
+  } else if (g_strcmp0(cadenaTam, "Pequenio") == 0){
     miCirculo[numCuerpos].tam = 5;
-  }
-  else if ((g_strcmp0(cadenaTam, "Normal") == 0))
-  {
+  } else if ((g_strcmp0(cadenaTam, "Normal") == 0)){
     miCirculo[numCuerpos].tam = 10;
-  }
-  else if ((g_strcmp0(cadenaTam, "Grande") == 0))
-  {
+  } else if ((g_strcmp0(cadenaTam, "Grande") == 0)){
     miCirculo[numCuerpos].tam = 15;
-  }
-  else
-  {
+  }else{
     miCirculo[numCuerpos].tam = 20;
+  }
+
+  if (g_strcmp0(cadenaColor, "Verde") == 0) {
+    miCirculo[numCuerpos].r = 0;miCirculo[numCuerpos].g = 1;miCirculo[numCuerpos].b = 0;
+  } else if (g_strcmp0(cadenaColor, "Rojo") == 0){
+    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 0;
+  } else if ((g_strcmp0(cadenaColor, "Amarillo") == 0)){
+    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 1;miCirculo[numCuerpos].b = 0;
+  } else if ((g_strcmp0(cadenaColor, "Azul") == 0)){
+    miCirculo[numCuerpos].r = 0;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 1;
+  }else if (g_strcmp0(cadenaColor, "Naranja") == 0){
+    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 0.5;miCirculo[numCuerpos].b = 0;
+  } else if ((g_strcmp0(cadenaColor, "Morado") == 0)){
+    miCirculo[numCuerpos].r = 0.5;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 1;
+  } else if ((g_strcmp0(cadenaColor, "Rosa") == 0)){
+    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 0.5;miCirculo[numCuerpos].b = 0.5;
+  }else if (g_strcmp0(cadenaColor, "Gris") == 0){
+    miCirculo[numCuerpos].r = 0.5;miCirculo[numCuerpos].g = 0.5;miCirculo[numCuerpos].b = 0.5;
+  } else if ((g_strcmp0(cadenaColor, "Marron") == 0)){
+    miCirculo[numCuerpos].r = 0.6;miCirculo[numCuerpos].g = 0.4;miCirculo[numCuerpos].b = 0.2;
+  } else{
+    miCirculo[numCuerpos].r = 0;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 0;
   }
 
   // los valores los introduce el usuario
   miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX / 1000;
   miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY / 1000;
 
-  miCirculo[numCuerpos].r = 0;
-  miCirculo[numCuerpos].g = 0;
-  miCirculo[numCuerpos].b = 0;
 
   numCuerpos++;
 
