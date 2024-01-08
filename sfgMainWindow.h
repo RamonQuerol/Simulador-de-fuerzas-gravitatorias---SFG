@@ -12,5 +12,5 @@ G_DECLARE_FINAL_TYPE (SfgMainWindow, sfg_main_window, SFG, MAIN_WINDOW, GtkAppli
 SfgMainWindow       *sfg_main_window_new          (SfgApp *app);
 void                    sfg_main_window_open         (SfgMainWindow *win,
                                                          GFile            *file);    
-void                    add_cuerpos               (int num);
+void                    add_cuerpos               (int num, int masaMin, int masaMax);
 void                    add_cuerpo                (float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam, gchar *cadenaColor);

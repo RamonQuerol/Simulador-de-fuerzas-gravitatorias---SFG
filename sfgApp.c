@@ -3,6 +3,7 @@
 #include "sfgApp.h"
 #include "sfgMainWindow.h"
 #include "sfgAmcWindow.h"
+#include "sfgSettingsWindow.h"
 
 struct _SfgApp
 {
@@ -41,6 +42,12 @@ ajustes_activated(GSimpleAction *action,
                   GVariant *parameter,
                   gpointer app)
 {
+  GtkWindow *win;
+  
+  win = gtk_application_get_active_window(GTK_APPLICATION(app));
+  SfgSettingsWindow *settings = sfg_settings_window_new(SFG_MAIN_WINDOW(win));
+  gtk_window_set_default_size(GTK_WINDOW(settings), 500, 125);
+  gtk_window_present(GTK_WINDOW(settings));
 }
 
 static void

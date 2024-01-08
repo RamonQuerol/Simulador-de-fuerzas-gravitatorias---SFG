@@ -196,7 +196,7 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
   pintar_cuerpos();
 }
 
-void add_cuerpos(int numCuerposAdd)
+void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
 {
 
   printf("Se anade conjunto de cuerpos \n");
@@ -220,19 +220,19 @@ void add_cuerpos(int numCuerposAdd)
 
   int j;
 
+  int pseudoMax = masaMax - masaMin;
+
   miCirculo = tempPointer;
   for (int i = numCuerpos, j = 0; i < numCuerposNuevo; ++i, ++j)
   {
     
-    
-    miCirculo[i].tam = rand() % 20 + 5;
-
-    cuerpos[j].masa = miCirculo[i].tam;
+    cuerpos[j].masa = rand() % pseudoMax + masaMin;
     cuerpos[j].posicionX = (float)(rand() %1000);
     cuerpos[j].posicionY = (float)(rand() %1000);
     cuerpos[j].velocidadX = 0;
     cuerpos[j].velocidadY = 0;
 
+    miCirculo[i].tam = (cuerpos[j].masa/masaMax) * 20 + 1; 
     miCirculo[i].x = (double)(cuerpos[j].posicionX/1000);
     miCirculo[i].y = (double)(cuerpos[j].posicionY/1000);
 

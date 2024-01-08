@@ -35,6 +35,57 @@
         </child>
 
         <child>
+          <object class="GtkBox" id="content_area3">
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property> 
+            <property name="margin-bottom">5</property> 
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+
+            <child>
+              <object class="GtkLabel" id="label_request2">
+                <property name="label">Introduzca masa mínima</property>
+                <property name="margin-end">10</property>
+
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkEntry" id="masaMinima">
+                <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+                <property name="margin-end">10</property>
+                <signal name="changed" handler="obtenerMasaMin" swapped="no"/>
+              </object>
+            </child>
+            
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkBox" id="content_area4">
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property> 
+            <property name="margin-bottom">5</property> 
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+
+            <child>
+              <object class="GtkLabel" id="label_request3">
+                <property name="label">Introduzca masa máxima</property>
+                <property name="margin-end">10</property>
+
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkEntry" id="masaMaxima">
+                <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+                <property name="margin-end">10</property>
+                <signal name="changed" handler="obtenerMasaMax" swapped="no"/>
+              </object>
+            </child>
+            
+          </object>
+        </child>
+        <child>
           <object class="GtkButton" id="botonConfirmar">
             <property name="label">Confirmar</property>
             <property name="margin-start">200</property>

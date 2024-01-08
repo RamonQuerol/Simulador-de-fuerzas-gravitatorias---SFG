@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="SfgSettingsWindow" parent="GtkDialog">
+    <property name="title" translatable="yes">Ajustes de la simulación</property>
+    <property name="resizable">0</property>
+    <property name="modal">1</property>
+    <child internal-child="content_area">
+      <object class="GtkBox" id="main_box">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+
+        <child>
+          <object class="GtkBox" id="content_area1">
+            <property name="margin-start">10</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            
+            <child>
+              <object class="GtkLabel" id="labelTiempo">
+                <property name="label">Introduzca el tiempo que pasa en la simulación por cada segundo real</property>
+                <property name="margin-end">5</property>
+              </object>
+            </child>
+            
+            <child>
+              <object class="GtkEntry" id="tiempo">
+                <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+                <property name="margin-top">5</property>
+                <property name="width-chars">20</property> 
+                <property name="margin-end">5</property>
+                <signal name="changed" handler="obtenerTiempo" swapped="no"/>
+              </object>
+            </child>
+            
+            <child>
+              <object class="GtkComboBoxText" id="unidadesTiempo">
+                <property name="margin-top">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-bottom">10</property>
+                <signal name="changed" handler="obtenerUnidadesTiempo" swapped="no"/>
+                <items>
+                  <item translatable="yes">segundos</item>
+                  <item translatable="yes">minutos</item>
+                  <item translatable="yes">horas</item>
+                  <item translatable="yes">dias</item>
+                  <item translatable="yes">semanas</item>
+                  <item translatable="yes">meses</item>
+                  <item translatable="yes">anios</item>
+                </items>
+              </object>
+            </child>
+
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkBox" id="content_area2">
+            <property name="margin-start">10</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            
+            <child>
+              <object class="GtkLabel" id="labelDistancia">
+                <property name="label">Introduzca la distancia en la simulación por cada pixel</property>
+                <property name="margin-end">5</property>
+              </object>
+            </child>
+            
+            <child>
+              <object class="GtkEntry" id="distancia">
+                <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+                <property name="margin-top">5</property>
+                <property name="width-chars">20</property> 
+                <property name="margin-end">5</property>
+                <signal name="changed" handler="obtenerDistancia" swapped="no"/>
+              </object>
+            </child>
+            
+            <child>
+              <object class="GtkComboBoxText" id="unidadesDistancia">
+                <property name="margin-top">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-bottom">10</property>
+                <signal name="changed" handler="obtenerUnidadesDistancia" swapped="no"/>
+                <items>
+                  <item translatable="yes">metros</item>
+                  <item translatable="yes">kilometros</item>
+                </items>
+              </object>
+            </child>
+
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkButton" id="botonConfirmar">
+            <property name="label">Confirmar</property>
+            <property name="margin-top">10</property>
+            <property name="margin-start">200</property>
+            <property name="margin-end">200</property>
+            <property name="margin-bottom">10</property>
+            <signal name="clicked" handler="confirmar" swapped="no"/>
+          </object>
+        </child>
+
+      </object>
+    </child>
+  </template>
+</interface>
