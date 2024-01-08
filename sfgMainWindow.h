@@ -13,4 +13,4 @@ SfgMainWindow       *sfg_main_window_new          (SfgApp *app);
 void                    sfg_main_window_open         (SfgMainWindow *win,
                                                          GFile            *file);    
 void                    add_cuerpos               (int num);
-void                    add_cuerpo                (float masa, float posX, float posY, float velX, float velY);
+void                    add_cuerpo                (float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam);

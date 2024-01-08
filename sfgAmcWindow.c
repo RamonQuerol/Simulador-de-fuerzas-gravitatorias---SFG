@@ -1,3 +1,4 @@
+// Ventana para anadir muchos cuerpos(AMC)
 #include <gtk/gtk.h>
 
 #include "sfgAmcWindow.h"
@@ -9,25 +10,29 @@ struct _SfgAmcWindow
     GtkDialog parent;
 
     GtkWidget *numCuerpos;
-    //  GtkWidget *botonConfirmar;
+    GtkWidget *botonConfirmar;
 };
 
 G_DEFINE_TYPE(SfgAmcWindow, sfg_amc_window, GTK_TYPE_DIALOG);
 SfgAmcWindow *amc_win;
+const gchar *cadena;
 
-// Función que maneja la señal de activación de la entrada
+// Función que maneja el introducir un numero
 static void obtenerNumero(GtkEntry *entry, gpointer user_data)
 {
-    const gchar *cadena = gtk_editable_get_text(GTK_EDITABLE(entry));
-    int num = atoi(cadena);
-    add_cuerpos(num);
-    gtk_window_destroy((GtkWindow *)amc_win);
+    cadena = gtk_editable_get_text(GTK_EDITABLE(entry));
 }
 
-// Función que maneja la señal de clic en el botón
-// static void confirmar(GtkButton *button, gpointer user_data)
-// {
-// }
+//Función que maneja la señal de clic en el botón 
+static void confirmar(GtkButton *button, gpointer user_data)
+{
+    if (cadena != NULL)
+    {
+        int num = atoi(cadena);
+        add_cuerpos(num);
+    }
+    gtk_window_destroy((GtkWindow *)amc_win);
+}
 
 static void
 sfg_amc_window_init(SfgAmcWindow *win)
@@ -49,10 +54,10 @@ sfg_amc_window_class_init(SfgAmcWindowClass *class)
     gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS(class),
                                                 "/com/git/sfg/amcWindow.ui");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgAmcWindow, numCuerpos);
-    //  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgAmcWindow, botonConfirmar);
+    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgAmcWindow, botonConfirmar);
 
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerNumero);
-    // gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), confirmar);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), confirmar);
 }
 
 SfgAmcWindow *sfg_amc_window_new(SfgMainWindow *win)

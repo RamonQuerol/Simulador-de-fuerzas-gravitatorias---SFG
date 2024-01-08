@@ -1,3 +1,4 @@
+// Ventana para Anadir un cuerpo(AUC)
 #include <gtk/gtk.h>
 
 #include "sfgAucWindow.h"
@@ -16,6 +17,7 @@ struct _SfgAucWindow
 };
 
 float masa, posX, posY, velX, velY;
+gchar *cadenaTam;
 G_DEFINE_TYPE(SfgAucWindow, sfg_auc_window, GTK_TYPE_DIALOG);
 SfgAucWindow *auc_win;
 
@@ -53,13 +55,16 @@ static void obtenerVelY(GtkEntry *entry, gpointer user_data)
     const gchar *cadenaVelY = gtk_editable_get_text(GTK_EDITABLE(entry));
     velY = atof(cadenaVelY);
     printf("%f", velY);
-    add_cuerpo(masa, posX, posY, velX, velY);
+    add_cuerpo(masa, posX, posY, velX, velY, cadenaTam);
     gtk_window_destroy((GtkWindow *)auc_win);
 }
-// Función que maneja la señal de clic en el botón
-// static void confirmar(GtkButton *button, gpointer user_data)
-// {
-// }
+
+static void obtenerTam(GtkComboBoxText *widget, gpointer user_data)
+{
+    
+    cadenaTam = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));
+    
+}
 
 static void
 sfg_auc_window_init(SfgAucWindow *win)
@@ -93,6 +98,7 @@ sfg_auc_window_class_init(SfgAucWindowClass *class)
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerPosY);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerVelX);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerVelY);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerTam);
 
     // gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), confirmar);
 }

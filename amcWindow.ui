@@ -1,29 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <template class="SfgAmcWindow" parent="GtkDialog">
-    <property name="title" translatable="yes">Añadir Multiples Cuerpos</property> 
+    <property name="title" translatable="yes">Añadir Multiples Cuerpos</property>
     <property name="resizable">0</property>
     <property name="modal">1</property>
-    <child internal-child="content_area">     
+    <child internal-child="content_area">
       <object class="GtkBox" id="content_area">
+        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
+
         <child>
-          <object class="GtkLabel" id="label_request">
-            <property name="label">Introduzca el numero de cuerpos y pulse ENTER</property>
+          <object class="GtkBox" id="content_area2">
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property> 
+            <property name="margin-bottom">5</property> 
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+
+            <child>
+              <object class="GtkLabel" id="label_request">
+                <property name="label">Introduzca el numero de cuerpos</property>
+                <property name="margin-end">10</property>
+
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkEntry" id="numCuerpos">
+                <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+                <property name="margin-end">10</property>
+                <signal name="changed" handler="obtenerNumero" swapped="no"/>
+              </object>
+            </child>
+
           </object>
         </child>
+
         <child>
-          <object class="GtkEntry" id="numCuerpos">
-            <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER </property>
-            <!-- <property name="text">0</property> -->
-            <signal name="activate" handler="obtenerNumero" swapped="no"/>
-          </object>
-        </child>       
-        <!-- <child>
           <object class="GtkButton" id="botonConfirmar">
             <property name="label">Confirmar</property>
+            <property name="margin-start">200</property>
+            <property name="margin-end">200</property>
             <signal name="clicked" handler="confirmar" swapped="no"/>
           </object>
-        </child> -->
+        </child>
+
       </object>
     </child>
   </template>

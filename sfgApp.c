@@ -25,7 +25,7 @@ anadir_multiples_activated(GSimpleAction *action,
 
   win = gtk_application_get_active_window(GTK_APPLICATION(app));
   SfgAmcWindow *amc = sfg_amc_window_new(SFG_MAIN_WINDOW(win));
-  gtk_window_set_default_size(GTK_WINDOW(amc), 300, 100);
+  gtk_window_set_default_size(GTK_WINDOW(amc), 400, 125);
   gtk_window_present(GTK_WINDOW(amc));
 }
 

@@ -112,9 +112,19 @@ resize_cb(GtkWidget *widget,
   }
 }
 
-void add_cuerpo(float masa, float posX, float posY, float velX, float velY)
+void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam)
 {
-  printf("Anade un cuerpo \n");
+  printf("Anade un cuerpo  \n");
+
+  if (g_strcmp0(cadenaTam, "Pequenio") == 0) {
+
+    } else if((g_strcmp0(cadenaTam, "Normal") == 0)) {
+
+    }else if((g_strcmp0(cadenaTam, "Grande") == 0)) {
+
+    }else{
+
+    }
 
   // Creacion de cuerpo
   struct Circulo *tempPointer = NULL; // Puntero temporal para no perder antiguos punteros en caso de fallos con realloc
