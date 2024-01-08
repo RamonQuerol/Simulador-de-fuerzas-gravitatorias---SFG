@@ -35,7 +35,11 @@ static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
 struct Circulo *miCirculo; // puntero al array de circulos
 
-int simulacionActivada = 0; // Variable global que activa o desactiva la simulacion
+
+int simulacionActivada = 0; //Variable global que activa o desactiva la simulacion
+int pantallaActualizada = 1; // Variable global que indica si se han actualizado las posiciones en la pantalla
+GMainContext *context;
+
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -90,6 +94,7 @@ static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gp
   alto = height;
   cairo_set_source_surface(cr, surface, 0, 0);
   cairo_paint(cr);
+  pantallaActualizada = 1;
 }
 
 static void
@@ -206,69 +211,118 @@ void add_cuerpos(int numCuerposAdd)
     return;
   }
 
+  Cuerpo *cuerpos;
+
+  if((cuerpos = (Cuerpo *)malloc(sizeof(Cuerpo)*numCuerposAdd))==NULL){
+    perror("Error al obtener la memoria para las variables temporales de add_cuerpos");
+    return;
+  }
+
+  
+
   miCirculo = tempPointer;
   for (int i = numCuerpos; i < numCuerposNuevo; i++)
   {
     miCirculo[i].tam = rand() % 20 + 5;
-    miCirculo[i].x = ((double)rand() / RAND_MAX);
-    miCirculo[i].y = ((double)rand() / RAND_MAX);
+
+    cuerpos[i].masa = miCirculo[i].tam;
+    cuerpos[i].posicionX = (float)(rand() %1000);
+    cuerpos[i].posicionY = (float)(rand() %1000);
+
+    miCirculo[i].x = (double)(cuerpos[i].posicionX/1000);
+    miCirculo[i].y = (double)(cuerpos[i].posicionY/1000);
 
     miCirculo[i].r = (double)rand() / RAND_MAX;
     miCirculo[i].g = (double)rand() / RAND_MAX;
     miCirculo[i].b = (double)rand() / RAND_MAX;
   }
+  //sfg_simulador_addCuerpos(numCuerposAdd, cuerpos);
   numCuerpos = numCuerposNuevo;
   pintar_cuerpos();
+
+  free(cuerpos);
+}
+
+static gpointer
+comenzar_simulacion_thread(gpointer datos){
+    
+    Cuerpo *cuerposSimulacion = datos;
+    
+    int cuentaCosas = 0;
+    int segundoCuentaCosas = 0;
+    int i;
+    GSource* source = g_idle_source_new ();
+    
+
+    g_source_set_callback(source, pintar_cuerpos, NULL, NULL);
+
+    g_source_attach (source, context);
+
+    while(simulacionActivada){
+
+    
+
+    sfg_simular(100, cuerposSimulacion);
+
+
+    //if(cuentaCosas >100){
+      //++segundoCuentaCosas;
+      //printf("%d ", segundoCuentaCosas);
+    for(i = 0; i<numCuerpos; ++i){
+      //miCirculo[i].masa = cuerposSimulacion[i].masa;
+      miCirculo[i].x = cuerposSimulacion[i].posicionX/1000;
+      miCirculo[i].y = cuerposSimulacion[i].posicionY/1000; 
+    }
+
+    //pintar_cuerpos();
+    //cuentaCosas = 0;
+    //}
+
+    cuentaCosas++;
+
+    if(pantallaActualizada){
+      //g_idle_add(pintar_cuerpos, NULL);
+      
+      pantallaActualizada = 0;
+    }
+  
+  }
+
+  free(cuerposSimulacion);
+  return NULL;
 }
 
 // Funciones que se llaman al hacer click en botones
 static void
 comenzar_simulacion()
 {
-  // anadirGordo();
 
   printf("Simulacion comenzada");
 
-  Cuerpo *cuerposSimulacion;
-  int i;
+  GThread    *thread;
 
-  if ((cuerposSimulacion = malloc(sizeof(Cuerpo) * numCuerpos)) == NULL)
+  Cuerpo *cuerposSimulacion;
+  
+
+  if ((cuerposSimulacion = malloc(sizeof(Cuerpo) * numCuerpos))==NULL)
   {
     perror("No se pudo iniciar la simulacion ya que no hay suficiente memoria para guardar los resultados");
     return;
   }
   simulacionActivada = 1;
+  
+  thread = g_thread_new ("simulacion", comenzar_simulacion_thread, cuerposSimulacion);
 
-  int cuentaCosas = 0;
-  int segundoCuentaCosas = 0;
+  g_thread_unref (thread);
 
-  while (cuentaCosas < 100)
-  {
-
-    sfg_simular(1000, cuerposSimulacion);
-
-    // if(cuentaCosas >100){
-    ++segundoCuentaCosas;
-    // printf("%d ", segundoCuentaCosas);
-    for (i = 0; i < numCuerpos; ++i)
-    {
-      // miCirculo[i].masa = cuerposSimulacion[i].masa;
-      miCirculo[i].x = cuerposSimulacion[i].posicionX / 1000;
-      miCirculo[i].y = cuerposSimulacion[i].posicionY / 1000;
-    }
-
-    pintar_cuerpos();
-    // cuentaCosas = 0;
-    // }
-
-    cuentaCosas++;
-  }
 }
+
 
 static void
 finalizar_simulacion()
 {
   printf("Simulacion finalizada");
+  simulacionActivada = 0;
 }
 
 static void
@@ -317,6 +371,7 @@ sfg_main_window_new(SfgApp *app)
   win = g_object_new(SFG_MAIN_WINDOW_TYPE, "application", app, NULL);
   gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA(win->area), draw_cb, NULL, NULL);
   sfg_simulador_init();
+  context=g_main_context_get_thread_default ();
   return win;
 }
 
