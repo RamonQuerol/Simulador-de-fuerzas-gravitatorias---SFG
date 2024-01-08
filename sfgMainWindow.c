@@ -35,11 +35,11 @@ static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
 struct Circulo *miCirculo; // puntero al array de circulos
 
-
-int simulacionActivada = 0; //Variable global que activa o desactiva la simulacion
+int simulacionActivada = 0;  // Variable global que activa o desactiva la simulacion
 int pantallaActualizada = 1; // Variable global que indica si se han actualizado las posiciones en la pantalla
 GMainContext *context;
 
+static GMutex mutexCirculos;
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -75,6 +75,7 @@ static void pintar_cuerpos()
   cairo_t *cr = cairo_create(surface);
   cairo_set_line_width(cr, 2.0);
 
+  g_mutex_lock(&mutexCirculos);
   for (int i = 0; i < numCuerpos; i++)
   {
     // printf("He pintado en %f %f\n", miCirculo[i].x, miCirculo[i].y);
@@ -82,6 +83,7 @@ static void pintar_cuerpos()
     cairo_arc(cr, miCirculo[i].x * ancho, miCirculo[i].y * alto, miCirculo[i].tam, 0, 2 * G_PI);
     cairo_fill(cr);
   }
+  g_mutex_unlock(&mutexCirculos);
 
   cairo_destroy(cr);
   gtk_widget_queue_draw(win->area);
@@ -151,44 +153,91 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
 
   miCirculo = tempPointer;
 
-  if (g_strcmp0(cadenaTam, "Muy Pequenio") == 0) {
+  if (g_strcmp0(cadenaTam, "Muy Pequenio") == 0)
+  {
     miCirculo[numCuerpos].tam = 2;
-  } else if (g_strcmp0(cadenaTam, "Pequenio") == 0){
+  }
+  else if (g_strcmp0(cadenaTam, "Pequenio") == 0)
+  {
     miCirculo[numCuerpos].tam = 5;
-  } else if ((g_strcmp0(cadenaTam, "Normal") == 0)){
+  }
+  else if ((g_strcmp0(cadenaTam, "Normal") == 0))
+  {
     miCirculo[numCuerpos].tam = 10;
-  } else if ((g_strcmp0(cadenaTam, "Grande") == 0)){
+  }
+  else if ((g_strcmp0(cadenaTam, "Grande") == 0))
+  {
     miCirculo[numCuerpos].tam = 15;
-  }else{
+  }
+  else
+  {
     miCirculo[numCuerpos].tam = 20;
   }
 
-  if (g_strcmp0(cadenaColor, "Verde") == 0) {
-    miCirculo[numCuerpos].r = 0;miCirculo[numCuerpos].g = 1;miCirculo[numCuerpos].b = 0;
-  } else if (g_strcmp0(cadenaColor, "Rojo") == 0){
-    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 0;
-  } else if ((g_strcmp0(cadenaColor, "Amarillo") == 0)){
-    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 1;miCirculo[numCuerpos].b = 0;
-  } else if ((g_strcmp0(cadenaColor, "Azul") == 0)){
-    miCirculo[numCuerpos].r = 0;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 1;
-  }else if (g_strcmp0(cadenaColor, "Naranja") == 0){
-    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 0.5;miCirculo[numCuerpos].b = 0;
-  } else if ((g_strcmp0(cadenaColor, "Morado") == 0)){
-    miCirculo[numCuerpos].r = 0.5;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 1;
-  } else if ((g_strcmp0(cadenaColor, "Rosa") == 0)){
-    miCirculo[numCuerpos].r = 1;miCirculo[numCuerpos].g = 0.5;miCirculo[numCuerpos].b = 0.5;
-  }else if (g_strcmp0(cadenaColor, "Gris") == 0){
-    miCirculo[numCuerpos].r = 0.5;miCirculo[numCuerpos].g = 0.5;miCirculo[numCuerpos].b = 0.5;
-  } else if ((g_strcmp0(cadenaColor, "Marron") == 0)){
-    miCirculo[numCuerpos].r = 0.6;miCirculo[numCuerpos].g = 0.4;miCirculo[numCuerpos].b = 0.2;
-  } else{
-    miCirculo[numCuerpos].r = 0;miCirculo[numCuerpos].g = 0;miCirculo[numCuerpos].b = 0;
+  if (g_strcmp0(cadenaColor, "Verde") == 0)
+  {
+    miCirculo[numCuerpos].r = 0;
+    miCirculo[numCuerpos].g = 1;
+    miCirculo[numCuerpos].b = 0;
+  }
+  else if (g_strcmp0(cadenaColor, "Rojo") == 0)
+  {
+    miCirculo[numCuerpos].r = 1;
+    miCirculo[numCuerpos].g = 0;
+    miCirculo[numCuerpos].b = 0;
+  }
+  else if ((g_strcmp0(cadenaColor, "Amarillo") == 0))
+  {
+    miCirculo[numCuerpos].r = 1;
+    miCirculo[numCuerpos].g = 1;
+    miCirculo[numCuerpos].b = 0;
+  }
+  else if ((g_strcmp0(cadenaColor, "Azul") == 0))
+  {
+    miCirculo[numCuerpos].r = 0;
+    miCirculo[numCuerpos].g = 0;
+    miCirculo[numCuerpos].b = 1;
+  }
+  else if (g_strcmp0(cadenaColor, "Naranja") == 0)
+  {
+    miCirculo[numCuerpos].r = 1;
+    miCirculo[numCuerpos].g = 0.5;
+    miCirculo[numCuerpos].b = 0;
+  }
+  else if ((g_strcmp0(cadenaColor, "Morado") == 0))
+  {
+    miCirculo[numCuerpos].r = 0.5;
+    miCirculo[numCuerpos].g = 0;
+    miCirculo[numCuerpos].b = 1;
+  }
+  else if ((g_strcmp0(cadenaColor, "Rosa") == 0))
+  {
+    miCirculo[numCuerpos].r = 1;
+    miCirculo[numCuerpos].g = 0.5;
+    miCirculo[numCuerpos].b = 0.5;
+  }
+  else if (g_strcmp0(cadenaColor, "Gris") == 0)
+  {
+    miCirculo[numCuerpos].r = 0.5;
+    miCirculo[numCuerpos].g = 0.5;
+    miCirculo[numCuerpos].b = 0.5;
+  }
+  else if ((g_strcmp0(cadenaColor, "Marron") == 0))
+  {
+    miCirculo[numCuerpos].r = 0.6;
+    miCirculo[numCuerpos].g = 0.4;
+    miCirculo[numCuerpos].b = 0.2;
+  }
+  else
+  {
+    miCirculo[numCuerpos].r = 0;
+    miCirculo[numCuerpos].g = 0;
+    miCirculo[numCuerpos].b = 0;
   }
 
   // los valores los introduce el usuario
   miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX / 1000;
   miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY / 1000;
-
 
   numCuerpos++;
 
@@ -213,7 +262,8 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
 
   Cuerpo *cuerpos;
 
-  if((cuerpos = (Cuerpo *)malloc(sizeof(Cuerpo)*numCuerposAdd))==NULL){
+  if ((cuerpos = (Cuerpo *)malloc(sizeof(Cuerpo) * numCuerposAdd)) == NULL)
+  {
     perror("Error al obtener la memoria para las variables temporales de add_cuerpos");
     return;
   }
@@ -248,48 +298,75 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
 }
 
 static gpointer
-comenzar_simulacion_thread(gpointer datos){
-    
-    Cuerpo *cuerposSimulacion = datos;
-    
-    int cuentaCosas = 0;
-    int segundoCuentaCosas = 0;
-    int i;
-    GSource* source = g_idle_source_new ();
-    
+comenzar_simulacion_thread(gpointer datos)
+{
 
-    g_source_set_callback(source, pintar_cuerpos, NULL, NULL);
+  Cuerpo *cuerposSimulacion = datos;
 
-    g_source_attach (source, context);
+  int cuentaCosas = 0;
+  int segundoCuentaCosas = 0;
+  int i;
+  GSource *source = g_idle_source_new();
 
-    while(simulacionActivada){
+  // En caso de que al simular haya un choque, la última posicon del array miCirculo deberá ir a esta posicion
+  int numMasaACambiar;
 
-    
+  g_source_set_callback(source, pintar_cuerpos, NULL, NULL);
 
-    sfg_simular(100, cuerposSimulacion);
+  g_source_attach(source, context);
 
+  while (simulacionActivada)
+  {
 
-    //if(cuentaCosas >100){
-      //++segundoCuentaCosas;
-      //printf("%d ", segundoCuentaCosas);
-    for(i = 0; i<numCuerpos; ++i){
-      //miCirculo[i].masa = cuerposSimulacion[i].masa;
-      miCirculo[i].x = cuerposSimulacion[i].posicionX/1000;
-      miCirculo[i].y = cuerposSimulacion[i].posicionY/1000; 
+    if ((numMasaACambiar = sfg_simular(1, cuerposSimulacion)))
+    {
+      g_mutex_lock(&mutexCirculos);
+
+      miCirculo[numMasaACambiar].tam = miCirculo[numCuerpos-1].tam;
+      miCirculo[numMasaACambiar].x = miCirculo[numCuerpos-1].x;
+      miCirculo[numMasaACambiar].y = miCirculo[numCuerpos-1].y;
+      miCirculo[numMasaACambiar].r = miCirculo[numCuerpos-1].r;
+      miCirculo[numMasaACambiar].b = miCirculo[numCuerpos-1].b;
+      miCirculo[numMasaACambiar].g = miCirculo[numCuerpos-1].g;
+
+      // printf("%f", miCirculo[numMasaACambiar].tam, );
+
+      --numCuerpos;
+
+      // Creacion de array de circulos
+      if ((miCirculo = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo) * numCuerpos)) == NULL)
+      {
+        perror("error al hacer realloc");
+        return;
+      }
+
+      g_mutex_unlock(&mutexCirculos);
+    }
+    else
+    {
+      for (i = 0; i < numCuerpos; ++i)
+      {
+        // miCirculo[i].masa = cuerposSimulacion[i].masa;
+        miCirculo[i].x = cuerposSimulacion[i].posicionX / 1000;
+        miCirculo[i].y = cuerposSimulacion[i].posicionY / 1000;
+      }
     }
 
-    //pintar_cuerpos();
-    //cuentaCosas = 0;
-    //}
+    // if(cuentaCosas >100){
+    //++segundoCuentaCosas;
+    // printf("%d ", segundoCuentaCosas);
+
+    // pintar_cuerpos();
+    // cuentaCosas = 0;
+    // }
 
     cuentaCosas++;
 
-    if(pantallaActualizada){
-      //g_idle_add(pintar_cuerpos, NULL);
-      
-      pantallaActualizada = 0;
-    }
-  
+    // if(pantallaActualizada){
+    // g_idle_add(pintar_cuerpos, NULL);
+
+    // pantallaActualizada = 0;
+    //}
   }
 
   free(cuerposSimulacion);
@@ -303,24 +380,21 @@ comenzar_simulacion()
 
   printf("Simulacion comenzada");
 
-  GThread    *thread;
+  GThread *thread;
 
   Cuerpo *cuerposSimulacion;
-  
 
-  if ((cuerposSimulacion = malloc(sizeof(Cuerpo) * numCuerpos))==NULL)
+  if ((cuerposSimulacion = malloc(sizeof(Cuerpo) * numCuerpos)) == NULL)
   {
     perror("No se pudo iniciar la simulacion ya que no hay suficiente memoria para guardar los resultados");
     return;
   }
   simulacionActivada = 1;
-  
-  thread = g_thread_new ("simulacion", comenzar_simulacion_thread, cuerposSimulacion);
 
-  g_thread_unref (thread);
+  thread = g_thread_new("simulacion", comenzar_simulacion_thread, cuerposSimulacion);
 
+  g_thread_unref(thread);
 }
-
 
 static void
 finalizar_simulacion()
@@ -375,7 +449,10 @@ sfg_main_window_new(SfgApp *app)
   win = g_object_new(SFG_MAIN_WINDOW_TYPE, "application", app, NULL);
   gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA(win->area), draw_cb, NULL, NULL);
   sfg_simulador_init();
-  context=g_main_context_get_thread_default ();
+
+  context = g_main_context_get_thread_default();
+  g_mutex_init(&mutexCirculos);
+
   return win;
 }
 

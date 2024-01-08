@@ -23,4 +23,4 @@ int sfg_simulador_addCuerpos(int numero, struct Cuerpo *cuerpos);
 
 void sfg_simulador_destroy();
 
-void sfg_simular(double tiempo, Cuerpo *cuerpos);
+int sfg_simular(double tiempo, Cuerpo *cuerpos);

@@ -88,8 +88,11 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
         }
         fuerzas[coordenada] = tempPointerMatrices;
 
-
-        
+        //Esto permite eliminar cuerpos en caso de que numero sea negativo
+        if(numCuerposNuevo<numCuerposSimulados){
+            numCuerposSimulados = numCuerposNuevo;
+            printf("Vaya %d, masa %f, velocidadX %f, velocidadY%f, posicionX%f, posicionY%f\n", numCuerposSimulados, masas[0], velocidades[0][0], velocidades[1][0], posiciones[0][0], posiciones[1][0]);
+        }
 
         // Este for irá actualizando las antiguas filas para que tengan el tamaño nuevo
         for (i = 0; i < numCuerposSimulados; ++i)
@@ -164,10 +167,47 @@ void sfg_simulador_destroy()
     }
 }
 
+
+int sfg_simulador_fusionEntreCuerpos(int numCuerpo1, int numCuerpo2){
+    
+    int numFusion; //contiene la posición en los array que tendrá la fusion de los objetos
+    int numNoEscogido; //contiene la posición en los array del que no será la posicion de la fusion
+
+    float masaFusion;
+
+    //La posicion de la fusion sera la de aquel con menor indice
+    if(numCuerpo1<numCuerpo2){
+        numFusion = numCuerpo1;
+        numNoEscogido = numCuerpo2;
+    }else{
+        numFusion = numCuerpo2;
+        numNoEscogido = numCuerpo1;
+    }
+    
+    masaFusion = masas[numCuerpo1] + masas[numCuerpo2];
+    //velocidades[0][numFusion] = masaFusion * (velocidades[0][numCuerpo1]/masas[numCuerpo1] + velocidades[0][numCuerpo2]/masas[numCuerpo2]);
+    //velocidades[1][numFusion] = masaFusion * (velocidades[1][numCuerpo1]/masas[numCuerpo1] + velocidades[1][numCuerpo2]/masas[numCuerpo2]);
+    velocidades[0][numFusion] = 0;
+    velocidades[1][numFusion] = 0;
+    
+    masas[numFusion] = masaFusion;
+
+
+    //Se moverá el último cuerpo a la posicion no escogida
+    masas[numNoEscogido] = masas[numCuerposSimulados-1];
+    velocidades[0][numNoEscogido] = velocidades[0][numCuerposSimulados-1];
+    velocidades[1][numNoEscogido] = velocidades[1][numCuerposSimulados-1];
+    posiciones[0][numNoEscogido] = posiciones[0][numCuerposSimulados-1];
+    posiciones[1][numNoEscogido] = posiciones[1][numCuerposSimulados-1];
+
+    sfg_simulador_addCuerpos(-1, NULL);
+    return numNoEscogido;
+}
+
 int contador = 0;
 
 // Realiza un ciclo de la simulacion
-void sfg_simular(double tiempo, Cuerpo *cuerpos)
+int sfg_simular(double tiempo, Cuerpo *cuerpos)
 {
 
     int i, j; 
@@ -176,11 +216,11 @@ void sfg_simular(double tiempo, Cuerpo *cuerpos)
     float vectorX, vectorY, tiempoCuadrado;
 
     if(!(contador%100)){
-        printf("posicion %f %f, velocidad %f %f\n", posiciones[0][0], posiciones[1][0], velocidades[0][0], velocidades[1][0]);
+        //printf("posicion %f %f, velocidad %f %f\n", posiciones[0][0], posiciones[1][0], velocidades[0][0], velocidades[1][0]);
     }
 
     ++contador;
-    printf("%d ", contador);
+    //printf("%d ", contador);
 
     //Calculo de fuerzas
 
@@ -201,6 +241,9 @@ void sfg_simular(double tiempo, Cuerpo *cuerpos)
 
             distancia = (float)sqrt(pow(vectorX,2)+pow(vectorY,2));
             
+            if(distancia < 1 ){
+                return sfg_simulador_fusionEntreCuerpos(i, j);
+            }
 
             float constante = 6.672E-11 * masas[i] * masas[j];            
             //Se aplica la formula de gravedad de Newton (G*m1*m2)/(distancia^2)
@@ -283,6 +326,7 @@ void sfg_simular(double tiempo, Cuerpo *cuerpos)
         //printf("%d: x = %f, y = %f, vx = %f, vy = %f\n", i, posiciones[0][i], posiciones[1][i], velocidades[0][i], velocidades[1][i]);
     }
 
+    return 0;
     
 
 }
