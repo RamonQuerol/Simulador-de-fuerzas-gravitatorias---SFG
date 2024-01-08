@@ -26,6 +26,7 @@ struct Circulo
   double b;
 };
 
+
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
 int numCuerpos = 0;
@@ -34,6 +35,8 @@ int alto;
 static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
 struct Circulo *miCirculo; // puntero al array de circulos
+
+int simulacionActivada = 0; //Variable global que activa o desactiva la simulacion
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -71,6 +74,7 @@ static void pintar_cuerpos()
 
   for (int i = 0; i < numCuerpos; i++)
   {
+    //printf("He pintado en %f %f\n", miCirculo[i].x, miCirculo[i].y);
     cairo_set_source_rgb(cr, miCirculo[i].r, miCirculo[i].g, miCirculo[i].b);
     cairo_arc(cr, miCirculo[i].x * ancho, miCirculo[i].y * alto, miCirculo[i].masa, 0, 2 * G_PI);
     cairo_fill(cr);
@@ -137,7 +141,7 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
 
   struct Cuerpo *cuerpoSimulacion = NULL; // Es el cuerpo que se mandará al simulador para guardar sus caracteristicas
 
-  if ((cuerpoSimulacion = (struct Cuerpo *)malloc(sizeof(struct Cuerpo))) == NULL)
+  if((cuerpoSimulacion = (struct Cuerpo *)malloc(sizeof(struct Cuerpo))) == NULL)
   {
     perror("error al hacer malloc durante la creación de la variable temporal de cuerpo");
     return;
@@ -202,9 +206,48 @@ void add_cuerpos(int numCuerposAdd)
 static void
 comenzar_simulacion()
 {
-  sfg_simulador_destroy();
+    //anadirGordo();
+
   printf("Simulacion comenzada");
+
+  Cuerpo *cuerposSimulacion;
+  int i;
+
+  if ((cuerposSimulacion = malloc(sizeof(Cuerpo) * numCuerpos))==NULL)
+  {
+    perror("No se pudo iniciar la simulacion ya que no hay suficiente memoria para guardar los resultados");
+    return;
+  }
+  simulacionActivada = 1;
+  
+  int cuentaCosas = 0;
+  int segundoCuentaCosas = 0;
+
+
+  while(cuentaCosas<100){
+
+    
+
+    sfg_simular(1000, cuerposSimulacion);
+
+
+    //if(cuentaCosas >100){
+      ++segundoCuentaCosas;
+      //printf("%d ", segundoCuentaCosas);
+    for(i = 0; i<numCuerpos; ++i){
+      //miCirculo[i].masa = cuerposSimulacion[i].masa;
+      miCirculo[i].x = cuerposSimulacion[i].posicionX/1000;
+      miCirculo[i].y = cuerposSimulacion[i].posicionY/1000; 
+    }
+
+    pintar_cuerpos();
+    //cuentaCosas = 0;
+    //}
+
+    cuentaCosas++;
+  }
 }
+
 
 static void
 finalizar_simulacion()
