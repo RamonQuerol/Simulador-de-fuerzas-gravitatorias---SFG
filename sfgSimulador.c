@@ -2,6 +2,7 @@
 // #include "sfgMainWindow.h"
 #include <stdio.h>  //No hace falta si se pone el include de arriba
 #include <stdlib.h> //Esta igual
+#include <math.h>
 #include "sfgSimulador.h"
 
 // struct _SfgSimulador
@@ -51,6 +52,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
         // Aumenta el tamaño del array que contiene las velocidades en el eje correspondiente
         if ((tempPointerVectores = (float *)realloc(velocidades[coordenada], sizeof(float) * numCuerposNuevo)) == NULL)
         {
+            perror("Error al asignar la memoria en el simulador al anadir velocidades");
             return -1;
         }
 
@@ -61,6 +63,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
         // Aumenta el tamaño del array que contiene las posiciones del eje correspondiente
         if ((tempPointerVectores = (float *)realloc(posiciones[coordenada], sizeof(float) * numCuerposNuevo)) == NULL)
         {
+            perror("Error al asignar la memoria en el simulador al anadir posiciones");
             return -1;
         }
         posiciones[coordenada] = tempPointerVectores;
@@ -69,6 +72,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
         // Aumenta el tamaño del array que contiene las aceleraciones en el eje X durante la ejecución
         if ((tempPointerVectores = (float *)realloc(aceleraciones[coordenada], sizeof(float) * numCuerposNuevo)) == NULL)
         {
+            perror("Error al asignar la memoria en el simulador al anadir aceleraciones");
             return -1;
         }
         aceleraciones[coordenada] = tempPointerVectores;
@@ -79,6 +83,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
         // Aumenta el numero de columnas de la matriz
         if ((tempPointerMatrices = (float **)realloc(fuerzas[coordenada], sizeof(float *) * numCuerposNuevo)) == NULL)
         {
+            perror("Error al asignar la memoria en el simulador al anadir fuerzas");
             return -1;
         }
         fuerzas[coordenada] = tempPointerMatrices;
@@ -92,6 +97,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
 
             if ((tempPointerVectores = (float *)realloc(fuerzas[coordenada][i], sizeof(float) * numCuerposNuevo)) == NULL)
             {
+                perror("Error al asignar la memoria en el simulador al rehacer los arrays de fuerzas");
                 return -1;
             }
             fuerzas[coordenada][i] = tempPointerVectores;
@@ -102,6 +108,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
             
             if ((fuerzas[coordenada][i] = (float *)malloc(sizeof(float) * numCuerposNuevo)) == NULL)
             {
+                perror("Error al asignar la memoria en el simulador al crear los arrays de fuerzas");
                 return -1;
             }
 
@@ -113,7 +120,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
 
     for (i = numCuerposSimulados; i < numCuerposNuevo; i++, ++posicionEnCuerpos)
     {
-        masas[i] = cuerpos[posicionEnCuerpos].masa;
+        masas[i] = cuerpos[posicionEnCuerpos].masa*10000;
         velocidades[0][i] = cuerpos[posicionEnCuerpos].velocidadX;
         velocidades[1][i] = cuerpos[posicionEnCuerpos].velocidadY;
         posiciones[0][i] = cuerpos[posicionEnCuerpos].posicionX;
@@ -157,9 +164,127 @@ void sfg_simulador_destroy()
     }
 }
 
+int contador = 0;
+
 // Realiza un ciclo de la simulacion
-void sfg_simular(int tiempo)
+void sfg_simular(double tiempo, Cuerpo *cuerpos)
 {
+
+    int i, j; 
+    float distancia, fuerzaVector;
+
+    float vectorX, vectorY, tiempoCuadrado;
+
+    if(!(contador%100)){
+        printf("posicion %f %f, velocidad %f %f\n", posiciones[0][0], posiciones[1][0], velocidades[0][0], velocidades[1][0]);
+    }
+
+    ++contador;
+    printf("%d ", contador);
+
+    //Calculo de fuerzas
+
+    for(i = 0; i<numCuerposSimulados; ++i){
+        
+        //Estas fuerzas se calculan fuera del bucle porque aunque necesitan un valor
+        //La distancia entre un planeta y el mismo es 0, por lo que si se alica la formula de gravitacion
+        //se daria un caso de division entre 0
+        fuerzas[0][i][i] = 0;
+        fuerzas[1][i][i] = 0;
+        
+        for(j = i+1; j<numCuerposSimulados; ++j){
+            
+
+            //Calculo de la distancia entre los cuerpos sqrt((x1-x2)^2 + (y1-y2)^2)
+            vectorX = abs(posiciones[0][i]-posiciones[0][j]);
+            vectorY = abs(posiciones[1][i]-posiciones[1][j]);
+
+            distancia = (float)sqrt(pow(vectorX,2)+pow(vectorY,2));
+            
+
+            float constante = 6.672E-11 * masas[i] * masas[j];            
+            //Se aplica la formula de gravedad de Newton (G*m1*m2)/(distancia^2)
+            fuerzaVector = (constante) / (pow(distancia, 2)); 
+
+            //Dado que fuerzaVector es la fuerza lineal, hay que transformarlo a forma vectorial
+            fuerzas[0][i][j] = (float)(fuerzaVector*(vectorX/distancia)); //Fuerza en coordenada X
+            fuerzas[0][j][i] = fuerzas[0][i][j];
+            
+
+            fuerzas[1][i][j] =  (float)(fuerzaVector*(vectorY/distancia)); //Fuerza en coordenada Y
+            fuerzas[1][j][i] = fuerzas[1][i][j];
+
+            //printf("distancia %f, fuerza lineal %f, fuerza lineal preDisvision %f, masa1 %f, masa2 %f, constante %f, fuerza en y %f\n", distancia, fuerzaVector, constante, masas[i], masas[j], fuerzas[1][i][j] * pow(10, 11), fuerzas[1][i][j]);
+
+            //Los vectores de fuerza son contrarios para ambos cuerpos, por lo que solo uno de ellos debe ser cambiado
+            //Antes de esta operación fuerza posee el signo de la coordenada mayor y la coordenada mayor siempre
+            //se moverá en dirección negativa, por tanto, cambia en signo si la coordenada mayor es positiva
+            
+            if(posiciones[0][i]>posiciones[0][j]){
+                fuerzas[0][i][j] = -fuerzas[0][i][j];
+            }else{
+                fuerzas[0][j][i] = -fuerzas[0][j][i];
+            }
+
+            if(posiciones[1][i]>posiciones[1][j]){
+                fuerzas[1][i][j] = -fuerzas[1][i][j];
+            }else{
+                fuerzas[1][j][i] = -fuerzas[1][j][i];
+            }
+        }
+    }
+
+    //Suma de fuerzas y guardado de resultados
+
+    //Se calculan variables constantes del bloque
+    tiempoCuadrado = pow(tiempo, 2);
+
+    for(i = 0; i<numCuerposSimulados; ++i){
+        
+
+        vectorX = 0.0;
+        vectorY = 0.0;
+        
+        //printf("\n%d\n", i);
+
+        //Se suman todas las fuerzas en la misma variable
+        for(j=0; j<numCuerposSimulados; ++j){
+            vectorX += fuerzas[0][i][j];
+            vectorY += fuerzas[1][i][j];
+
+            //printf("vector en j = %d, vecX = %f vecY = %f\n", j, vectorX, vectorY);
+        }
+
+        //Se calcula la aceleracion
+        aceleraciones[0][i]= vectorX/masas[i];
+        aceleraciones[1][i]= vectorY/masas[i];
+
+        //Y a partir de ella se calcula tanto la nueva posicion como la nueva velocidad
+        //Se ha calculado primero la posicion ya que posicion es dependiente de velocidad pero 
+        //la velocidad no es dependiente de la posicion
+        //Se ha aplicado la formula de movimiento rectilineo uniformemente acelerado X = X0 + v0*t + 0.5*a*(t^2)
+        posiciones[0][i] = posiciones[0][i] + velocidades[0][i]*tiempo + 0.5*aceleraciones[0][i]*tiempoCuadrado;
+        posiciones[1][i] = posiciones[1][i] + velocidades[1][i]*tiempo + 0.5*aceleraciones[1][i]*tiempoCuadrado;
+
+
+        cuerpos[i].posicionX = posiciones[0][i];
+        cuerpos[i].posicionY = posiciones[1][i];
+
+        //La formula para la velocidad es v = v0 + a*t
+        velocidades[0][i] = velocidades[0][i] + aceleraciones[0][i]*tiempo;
+        velocidades[1][i] = velocidades[1][i] + aceleraciones[1][i]*tiempo;
+
+        cuerpos[i].velocidadX = velocidades[0][i];
+        cuerpos[i].velocidadY = velocidades[1][i];
+
+        //Se pasa la masa por si han ocurrido cambios en esta
+        cuerpos[i].masa = masas[i];
+
+        //printf("%d: x = %f, y = %f, vx = %f, vy = %f\n", i, posiciones[0][i], posiciones[1][i], velocidades[0][i], velocidades[1][i]);
+    }
+
+    
+
 }
 
 //Método que se debe llamar antes de comenzar para inicializar los punteros principales
@@ -168,7 +293,7 @@ int sfg_simulador_init()
      //El if está para evitar que se inicialicen los punteros dos veces
      //si se vuelve a llamar la función por error
     if (!sfg_simulador_inicializado){
-        if (!(posiciones = malloc(sizeof(float **) * 2)))
+        if (!(posiciones = malloc(sizeof(float *) * 2)))
         {
             perror("No se pudo inicializar la simulación debido a no tener memoria para guardar los punteros a posiciones");
             return -1;
@@ -177,7 +302,7 @@ int sfg_simulador_init()
         posiciones[0]= NULL;
         posiciones[1]= NULL;
 
-        if (!(velocidades = malloc(sizeof(float **) * 2)))
+        if (!(velocidades = malloc(sizeof(float *) * 2)))
         {
             perror("No se pudo inicializar la simulación debido a no tener memoria para guardar los punteros a velocidades");
             return -1;
@@ -186,7 +311,7 @@ int sfg_simulador_init()
         velocidades[0]= NULL;
         velocidades[1]= NULL;
 
-        if (!(aceleraciones = malloc(sizeof(float **) * 2)))
+        if (!(aceleraciones = malloc(sizeof(float *) * 2)))
         {
             perror("No se pudo inicializar la simulación debido a no tener memoria para guardar los punteros a las aceleraciones");
             return -1;
@@ -195,7 +320,7 @@ int sfg_simulador_init()
         aceleraciones[0] = NULL;
         aceleraciones[1] = NULL;
 
-        if (!(fuerzas = malloc(sizeof(float ***) * 2)))
+        if (!(fuerzas = malloc(sizeof(float **) * 2)))
         {
             perror("No se pudo inicializar la simulación debido a no tener memoria para guardar los punteros a las aceleraciones");
             return -1;
