@@ -41,6 +41,9 @@ GMainContext *context;
 
 static GMutex mutexCirculos;
 
+float tiempoPorCiclo = 1;
+float distanciaRealPantalla = 1000;
+
 static void
 sfg_main_window_init(SfgMainWindow *win)
 {
@@ -121,6 +124,35 @@ resize_cb(GtkWidget *widget,
     pintar_cuerpos();
   }
 }
+
+void cambiarAjustes(float tiempo, float distancia, gchar *unidadesTiempo, gchar *unidadesDistancia){
+
+  //Ajustes de tiempo
+  if(g_strcmp0(unidadesTiempo, "segundos") == 0){
+    tiempoPorCiclo = tiempo;
+  }else if(g_strcmp0(unidadesTiempo, "minutos") == 0){
+    tiempoPorCiclo = tiempo * 60;
+  }else if(g_strcmp0(unidadesTiempo, "horas") == 0){
+    tiempoPorCiclo = tiempo * 3600;
+  }else if(g_strcmp0(unidadesTiempo, "dias") == 0){
+    tiempoPorCiclo = tiempo * 86400;
+  }else if(g_strcmp0(unidadesTiempo, "semanas") == 0){
+    tiempoPorCiclo = tiempo * 604800;
+  }else if(g_strcmp0(unidadesTiempo, "meses") == 0){
+    tiempoPorCiclo = tiempo * 2.628E6;
+  }else if(g_strcmp0(unidadesTiempo, "anio") == 0){
+    tiempoPorCiclo = tiempo * 3.154E7;
+  }
+
+
+  //Ajustes de distancia
+  if(g_strcmp0(unidadesDistancia, "metros")){
+    distanciaRealPantalla = distancia;
+  }else{
+    distanciaRealPantalla = distancia*1000;
+  }
+}
+
 
 void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam, gchar *cadenaColor)
 {
@@ -236,8 +268,8 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
   }
 
   // los valores los introduce el usuario
-  miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX / 1000;
-  miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY / 1000;
+  miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX / distanciaRealPantalla;
+  miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY / distanciaRealPantalla;
 
   numCuerpos++;
 
@@ -283,8 +315,8 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
     cuerpos[j].velocidadY = 0;
 
     miCirculo[i].tam = (cuerpos[j].masa/masaMax) * 20 + 1; 
-    miCirculo[i].x = (double)(cuerpos[j].posicionX/1000);
-    miCirculo[i].y = (double)(cuerpos[j].posicionY/1000);
+    miCirculo[i].x = (double)(cuerpos[j].posicionX/distanciaRealPantalla);
+    miCirculo[i].y = (double)(cuerpos[j].posicionY/distanciaRealPantalla);
 
     miCirculo[i].r = (double)rand() / RAND_MAX;
     miCirculo[i].g = (double)rand() / RAND_MAX;
@@ -318,7 +350,7 @@ comenzar_simulacion_thread(gpointer datos)
   while (simulacionActivada)
   {
 
-    if ((numMasaACambiar = sfg_simular(1, cuerposSimulacion)))
+    if ((numMasaACambiar = sfg_simular(tiempoPorCiclo, cuerposSimulacion)))
     {
       g_mutex_lock(&mutexCirculos);
 
@@ -347,8 +379,8 @@ comenzar_simulacion_thread(gpointer datos)
       for (i = 0; i < numCuerpos; ++i)
       {
         // miCirculo[i].masa = cuerposSimulacion[i].masa;
-        miCirculo[i].x = cuerposSimulacion[i].posicionX / 1000;
-        miCirculo[i].y = cuerposSimulacion[i].posicionY / 1000;
+        miCirculo[i].x = cuerposSimulacion[i].posicionX / distanciaRealPantalla;
+        miCirculo[i].y = cuerposSimulacion[i].posicionY / distanciaRealPantalla;
       }
     }
 
