@@ -68,7 +68,7 @@ static void obtenerColor(GtkComboBoxText *widget, gpointer user_data)
 //Función que maneja la señal de clic en el botón 
 static void confirmar(GtkButton *button, gpointer user_data)
 {
-    if (masa != 0 && velX != 0 && velY != 0 && cadenaTam != NULL)
+    if (masa != 0 && cadenaTam != NULL)
     {
         add_cuerpo(masa, posX, posY, velX, velY, cadenaTam, cadenaColor);
     }
