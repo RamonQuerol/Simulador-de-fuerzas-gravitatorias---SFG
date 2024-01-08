@@ -218,25 +218,29 @@ void add_cuerpos(int numCuerposAdd)
     return;
   }
 
-  
+  int j;
 
   miCirculo = tempPointer;
-  for (int i = numCuerpos; i < numCuerposNuevo; i++)
+  for (int i = numCuerpos, j = 0; i < numCuerposNuevo; ++i, ++j)
   {
+    
+    
     miCirculo[i].tam = rand() % 20 + 5;
 
-    cuerpos[i].masa = miCirculo[i].tam;
-    cuerpos[i].posicionX = (float)(rand() %1000);
-    cuerpos[i].posicionY = (float)(rand() %1000);
+    cuerpos[j].masa = miCirculo[i].tam;
+    cuerpos[j].posicionX = (float)(rand() %1000);
+    cuerpos[j].posicionY = (float)(rand() %1000);
+    cuerpos[j].velocidadX = 0;
+    cuerpos[j].velocidadY = 0;
 
-    miCirculo[i].x = (double)(cuerpos[i].posicionX/1000);
-    miCirculo[i].y = (double)(cuerpos[i].posicionY/1000);
+    miCirculo[i].x = (double)(cuerpos[j].posicionX/1000);
+    miCirculo[i].y = (double)(cuerpos[j].posicionY/1000);
 
     miCirculo[i].r = (double)rand() / RAND_MAX;
     miCirculo[i].g = (double)rand() / RAND_MAX;
     miCirculo[i].b = (double)rand() / RAND_MAX;
   }
-  //sfg_simulador_addCuerpos(numCuerposAdd, cuerpos);
+  sfg_simulador_addCuerpos(numCuerposAdd, cuerpos);
   numCuerpos = numCuerposNuevo;
   pintar_cuerpos();
 
