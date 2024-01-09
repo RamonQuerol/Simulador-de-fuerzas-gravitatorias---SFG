@@ -5,26 +5,33 @@
 #include <math.h>
 #include "sfgSimulador.h"
 
-// struct _SfgSimulador
-//{
-// };
 
-// G_DEFINE_TYPE(SfgSimulador, sfg_simulador, G_TYPE_OBJECT);
-
+//Datos que se guardan entre iteraciones 
 float *masas = NULL;
 float **posiciones;
 float **velocidades;
 
+
+
 // Estas dos variables no son necesarias ahora mismo, pero puede que cuando apliquemos las BLAS las necesitemos
 // float **distancias; //medidos en metros
 // float *vectores; //medidos en radianes
-float **aceleraciones; // medida en metros/segundos^2
 
+
+//Posiciones de memoria utilizadas durante la ejecución que combiene utilizar
+float **aceleraciones; // medida en metros/segundos^2
 float ***fuerzas;
+
 
 int numCuerposSimulados = 0;
 
-int sfg_simulador_inicializado = 0;
+
+//Variable que evita que se intente inicializar el simulador otra vez, una vez ya inicializado
+int sfg_simulador_inicializado = 0; 
+
+
+
+
 
 // Añade cuerpos a la simulacion
 int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
@@ -91,7 +98,6 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
         //Esto permite eliminar cuerpos en caso de que numero sea negativo
         if(numCuerposNuevo<numCuerposSimulados){
             numCuerposSimulados = numCuerposNuevo;
-            printf("Vaya %d, masa %f, velocidadX %f, velocidadY%f, posicionX%f, posicionY%f\n", numCuerposSimulados, masas[0], velocidades[0][0], velocidades[1][0], posiciones[0][0], posiciones[1][0]);
         }
 
         // Este for irá actualizando las antiguas filas para que tengan el tamaño nuevo
@@ -123,7 +129,7 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
 
     for (i = numCuerposSimulados; i < numCuerposNuevo; i++, ++posicionEnCuerpos)
     {
-        masas[i] = cuerpos[posicionEnCuerpos].masa*10000;
+        masas[i] = cuerpos[posicionEnCuerpos].masa;
         velocidades[0][i] = cuerpos[posicionEnCuerpos].velocidadX;
         velocidades[1][i] = cuerpos[posicionEnCuerpos].velocidadY;
         posiciones[0][i] = cuerpos[posicionEnCuerpos].posicionX;
@@ -134,6 +140,12 @@ int sfg_simulador_addCuerpos(int numero, Cuerpo *cuerpos)
 
     return 0;
 }
+
+
+
+
+
+
 
 // Libera toda la memoria del simulador
 void sfg_simulador_destroy()
@@ -166,6 +178,12 @@ void sfg_simulador_destroy()
         printf("Simulador destruido");
     }
 }
+
+
+
+
+
+
 
 
 int sfg_simulador_fusionEntreCuerpos(int numCuerpo1, int numCuerpo2){
@@ -204,7 +222,13 @@ int sfg_simulador_fusionEntreCuerpos(int numCuerpo1, int numCuerpo2){
     return numNoEscogido;
 }
 
-int contador = 0;
+
+
+
+
+
+
+
 
 // Realiza un ciclo de la simulacion
 int sfg_simular(double tiempo, Cuerpo *cuerpos)
@@ -215,12 +239,6 @@ int sfg_simular(double tiempo, Cuerpo *cuerpos)
 
     float vectorX, vectorY, tiempoCuadrado;
 
-    if(!(contador%100)){
-        //printf("posicion %f %f, velocidad %f %f\n", posiciones[0][0], posiciones[1][0], velocidades[0][0], velocidades[1][0]);
-    }
-
-    ++contador;
-    //printf("%d ", contador);
 
     //Calculo de fuerzas
 
@@ -257,8 +275,6 @@ int sfg_simular(double tiempo, Cuerpo *cuerpos)
             fuerzas[1][i][j] =  (float)(fuerzaVector*(vectorY/distancia)); //Fuerza en coordenada Y
             fuerzas[1][j][i] = fuerzas[1][i][j];
 
-            //printf("distancia %f, fuerza lineal %f, fuerza lineal preDisvision %f, masa1 %f, masa2 %f, constante %f, fuerza en y %f\n", distancia, fuerzaVector, constante, masas[i], masas[j], fuerzas[1][i][j] * pow(10, 11), fuerzas[1][i][j]);
-
             //Los vectores de fuerza son contrarios para ambos cuerpos, por lo que solo uno de ellos debe ser cambiado
             //Antes de esta operación fuerza posee el signo de la coordenada mayor y la coordenada mayor siempre
             //se moverá en dirección negativa, por tanto, cambia en signo si la coordenada mayor es positiva
@@ -287,15 +303,11 @@ int sfg_simular(double tiempo, Cuerpo *cuerpos)
 
         vectorX = 0.0;
         vectorY = 0.0;
-        
-        //printf("\n%d\n", i);
 
         //Se suman todas las fuerzas en la misma variable
         for(j=0; j<numCuerposSimulados; ++j){
             vectorX += fuerzas[0][i][j];
             vectorY += fuerzas[1][i][j];
-
-            //printf("vector en j = %d, vecX = %f vecY = %f\n", j, vectorX, vectorY);
         }
 
         //Se calcula la aceleracion
@@ -322,14 +334,18 @@ int sfg_simular(double tiempo, Cuerpo *cuerpos)
 
         //Se pasa la masa por si han ocurrido cambios en esta
         cuerpos[i].masa = masas[i];
-
-        //printf("%d: x = %f, y = %f, vx = %f, vy = %f\n", i, posiciones[0][i], posiciones[1][i], velocidades[0][i], velocidades[1][i]);
     }
 
     return 0;
     
 
 }
+
+
+
+
+
+
 
 //Método que se debe llamar antes de comenzar para inicializar los punteros principales
 int sfg_simulador_init()

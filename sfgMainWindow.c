@@ -5,6 +5,7 @@
 #include "sfgAucWindow.h"
 #include "sfgSimulador.h"
 
+//Objeto representativo de la ventana
 struct _SfgMainWindow
 {
   GtkApplicationWindow parent;
@@ -16,6 +17,9 @@ struct _SfgMainWindow
   GtkWidget *area;
 };
 
+
+//Tipo utilizado para guardar datos necesarios para pintar en pantalla los cuerpos
+//En ningún caso se utiliza para el calculo de la posición en proximos ciclos
 struct Circulo
 {
   int tam;
@@ -26,23 +30,35 @@ struct Circulo
   double b;
 };
 
+
+//Definición del objeto representante de la ventana
 G_DEFINE_TYPE(SfgMainWindow, sfg_main_window, GTK_TYPE_APPLICATION_WINDOW);
 
-int numCuerpos = 0;
+
+
+//Variables de proposito variado
 int ancho;
 int alto;
-static cairo_surface_t *surface = NULL;
 SfgMainWindow *win;
+
+//Variables para el dibujado de cuerpos
+static cairo_surface_t *surface = NULL;
+int numCuerpos = 0;
 struct Circulo *miCirculo; // puntero al array de circulos
 
+//Variables para el mantenimiento de la simulacion
 int simulacionActivada = 0;  // Variable global que activa o desactiva la simulacion
-int pantallaActualizada = 1; // Variable global que indica si se han actualizado las posiciones en la pantalla
 GMainContext *context;
-
 static GMutex mutexCirculos;
 
+
+//Variables con los ajustes personalizables de la simulacion
 float tiempoPorCiclo = 1;
 float distanciaRealPantalla = 1000;
+
+
+
+
 
 static void
 sfg_main_window_init(SfgMainWindow *win)
@@ -58,7 +74,12 @@ sfg_main_window_init(SfgMainWindow *win)
   g_object_unref(builder);
 }
 
-// borra el contenido de la ventana
+
+
+/////////////// OPERACIONES DE PINTADO DE VENTANA ///////////////
+
+
+// Borra el contenido de la ventana
 static void
 clear_surface(void)
 {
@@ -72,6 +93,10 @@ clear_surface(void)
   cairo_destroy(cr);
 }
 
+
+
+
+
 static void pintar_cuerpos()
 {
   clear_surface();
@@ -81,7 +106,6 @@ static void pintar_cuerpos()
   g_mutex_lock(&mutexCirculos);
   for (int i = 0; i < numCuerpos; i++)
   {
-    // printf("He pintado en %f %f\n", miCirculo[i].x, miCirculo[i].y);
     cairo_set_source_rgb(cr, miCirculo[i].r, miCirculo[i].g, miCirculo[i].b);
     cairo_arc(cr, miCirculo[i].x * ancho, miCirculo[i].y * alto, miCirculo[i].tam, 0, 2 * G_PI);
     cairo_fill(cr);
@@ -92,14 +116,17 @@ static void pintar_cuerpos()
   gtk_widget_queue_draw(win->area);
 }
 
+
+
+
+
+
 static void draw_cb(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data)
 {
-  // printf("drawcb");
   ancho = width;
   alto = height;
   cairo_set_source_surface(cr, surface, 0, 0);
   cairo_paint(cr);
-  pantallaActualizada = 1;
 }
 
 static void
@@ -125,6 +152,11 @@ resize_cb(GtkWidget *widget,
   }
 }
 
+
+/////////////// OPERACIONES DE AJUSTES ///////////////
+
+
+
 void cambiarAjustes(float tiempo, float distancia, gchar *unidadesTiempo, gchar *unidadesDistancia){
 
   //Ajustes de tiempo
@@ -146,12 +178,18 @@ void cambiarAjustes(float tiempo, float distancia, gchar *unidadesTiempo, gchar 
 
 
   //Ajustes de distancia
-  if(g_strcmp0(unidadesDistancia, "metros")){
+  if(g_strcmp0(unidadesDistancia, "metros")==0){
     distanciaRealPantalla = distancia;
   }else{
     distanciaRealPantalla = distancia*1000;
   }
+
+  pintar_cuerpos();
 }
+
+
+
+/////////////// OPERACIONES DE AÑADIDO DE DATOS ///////////////
 
 
 void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam, gchar *cadenaColor)
@@ -277,13 +315,24 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
   pintar_cuerpos();
 }
 
+
+
+
+
+
+
 void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
 {
 
   printf("Se anade conjunto de cuerpos \n");
+  
+  
   struct Circulo *tempPointer = NULL; // Puntero temporal para no perder antiguos punteros en caso de fallos con realloc
   srand((unsigned int)time(NULL));
+
+  int i, j;  
   int numCuerposNuevo = numCuerpos + numCuerposAdd;
+
 
   // Creacion de array de circulos
   if ((tempPointer = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo) * numCuerposNuevo)) == NULL)
@@ -300,12 +349,12 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
     return;
   }
 
-  int j;
+  
 
   int pseudoMax = masaMax - masaMin;
 
   miCirculo = tempPointer;
-  for (int i = numCuerpos, j = 0; i < numCuerposNuevo; ++i, ++j)
+  for (i = numCuerpos, j = 0; i < numCuerposNuevo; ++i, ++j)
   {
     
     cuerpos[j].masa = rand() % pseudoMax + masaMin;
@@ -329,14 +378,31 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
   free(cuerpos);
 }
 
+
+
+
+
+
+static void
+anadir_cuerpo()
+{
+  SfgAucWindow *auc = sfg_auc_window_new(SFG_MAIN_WINDOW(win));
+  gtk_window_set_default_size(GTK_WINDOW(auc), 400, 300);
+  gtk_window_present(GTK_WINDOW(auc));
+}
+
+
+
+
+/////////////// OPERACIONES MONITORIZACION DE SIMULACION ///////////////
+
+
+
 static gpointer
 comenzar_simulacion_thread(gpointer datos)
 {
 
   Cuerpo *cuerposSimulacion = datos;
-
-  int cuentaCosas = 0;
-  int segundoCuentaCosas = 0;
   int i;
   GSource *source = g_idle_source_new();
 
@@ -361,15 +427,13 @@ comenzar_simulacion_thread(gpointer datos)
       miCirculo[numMasaACambiar].b = miCirculo[numCuerpos-1].b;
       miCirculo[numMasaACambiar].g = miCirculo[numCuerpos-1].g;
 
-      // printf("%f", miCirculo[numMasaACambiar].tam, );
-
       --numCuerpos;
 
       // Creacion de array de circulos
       if ((miCirculo = (struct Circulo *)realloc(miCirculo, sizeof(struct Circulo) * numCuerpos)) == NULL)
       {
         perror("error al hacer realloc");
-        return;
+        return NULL;
       }
 
       g_mutex_unlock(&mutexCirculos);
@@ -378,39 +442,27 @@ comenzar_simulacion_thread(gpointer datos)
     {
       for (i = 0; i < numCuerpos; ++i)
       {
-        // miCirculo[i].masa = cuerposSimulacion[i].masa;
         miCirculo[i].x = cuerposSimulacion[i].posicionX / distanciaRealPantalla;
         miCirculo[i].y = cuerposSimulacion[i].posicionY / distanciaRealPantalla;
       }
     }
-
-    // if(cuentaCosas >100){
-    //++segundoCuentaCosas;
-    // printf("%d ", segundoCuentaCosas);
-
-    // pintar_cuerpos();
-    // cuentaCosas = 0;
-    // }
-
-    cuentaCosas++;
-
-    // if(pantallaActualizada){
-    // g_idle_add(pintar_cuerpos, NULL);
-
-    // pantallaActualizada = 0;
-    //}
   }
 
   free(cuerposSimulacion);
   return NULL;
 }
 
+
+
+
+
+
 // Funciones que se llaman al hacer click en botones
 static void
 comenzar_simulacion()
 {
 
-  printf("Simulacion comenzada");
+  printf("Simulacion comenzada\n");
 
   GThread *thread;
 
@@ -428,20 +480,31 @@ comenzar_simulacion()
   g_thread_unref(thread);
 }
 
+
+
+
+
+
 static void
 finalizar_simulacion()
 {
-  printf("Simulacion finalizada");
+  printf("Simulacion parada\n");
   simulacionActivada = 0;
 }
 
-static void
-anadir_cuerpo()
-{
-  SfgAucWindow *auc = sfg_auc_window_new(SFG_MAIN_WINDOW(win));
-  gtk_window_set_default_size(GTK_WINDOW(auc), 400, 300);
-  gtk_window_present(GTK_WINDOW(auc));
-}
+
+
+
+
+
+
+
+
+
+
+/////////////// OPERACIONES DE CREACION Y DESTRUCCION DE LA VENTANA ///////////////
+
+
 
 // Libera la memoria contenida en la diversas parte del programa
 static void sfg_main_window_destroy()
@@ -454,6 +517,12 @@ static void sfg_main_window_destroy()
   gtk_widget_dispose_template(win, SFG_MAIN_WINDOW_TYPE);
   gtk_window_destroy((GtkWindow *)win);
 }
+
+
+
+
+
+
 
 static void
 sfg_main_window_class_init(SfgMainWindowClass *class)
@@ -470,10 +539,14 @@ sfg_main_window_class_init(SfgMainWindowClass *class)
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), comenzar_simulacion);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), finalizar_simulacion);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), anadir_cuerpo);
-  // gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), pintar_cuerpo);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), sfg_main_window_destroy);
   gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), resize_cb);
 }
+
+
+
+
+
 
 SfgMainWindow *
 sfg_main_window_new(SfgApp *app)
@@ -487,6 +560,11 @@ sfg_main_window_new(SfgApp *app)
 
   return win;
 }
+
+
+
+
+
 
 void sfg_main_window_open(SfgMainWindow *win,
                           GFile *file)

@@ -90,19 +90,7 @@ sfg_app_open(GApplication *app,
              int n_files,
              const char *hint)
 {
-  GList *windows;
-  int i;
-  SfgMainWindow *win;
-  windows = gtk_application_get_windows(GTK_APPLICATION(app));
-  if (windows)
-    win = SFG_MAIN_WINDOW(windows->data);
-  else
-    win = sfg_main_window_new(SFG_APP(app));
-
-  for (i = 0; i < n_files; i++)
-    sfg_main_window_open(win, files[i]);
-
-  gtk_window_present(GTK_WINDOW(win));
+  sfg_app_activate(app);
 }
 
 static void

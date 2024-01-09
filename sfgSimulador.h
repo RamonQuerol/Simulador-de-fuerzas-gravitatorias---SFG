@@ -1,8 +1,6 @@
 #pragma once
 
 
-//#include "sfgMainWindow.h"
-
 typedef struct Cuerpo
 {
   float masa;
@@ -11,11 +9,6 @@ typedef struct Cuerpo
   float posicionX;
   float posicionY;
 } Cuerpo;
-
-
-//#define SFG_SIMULADOR_TYPE (sfg_simulador_get_type ())
-//G_DECLARE_FINAL_TYPE (SfgSimulador, sfg_simulador, SFG, SIMULADOR, GObject)
-
 
 int sfg_simulador_init();
 

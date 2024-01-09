@@ -14,3 +14,4 @@ void                    sfg_main_window_open         (SfgMainWindow *win,
                                                          GFile            *file);    
 void                    add_cuerpos               (int num, int masaMin, int masaMax);
 void                    add_cuerpo                (float masa, float posX, float posY, float velX, float velY, gchar *cadenaTam, gchar *cadenaColor);
+void                    cambiarAjustes            (float tiempo, float distancia, gchar *unidadadesTiempo, gchar *unidadesDistancia);

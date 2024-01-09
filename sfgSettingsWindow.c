@@ -48,7 +48,7 @@ static void confirmar(GtkButton *button, gpointer user_data)
 {
     if (tiempo != 0 && unidadesTiempo != NULL && distancia != 0 && unidadesDistancia != NULL)
     {
-
+        cambiarAjustes(tiempo, distancia, unidadesTiempo, unidadesDistancia);
     }
     gtk_window_destroy((GtkWindow *)settings_win);
 }
