@@ -12,6 +12,8 @@ struct _SfgApp
 
 G_DEFINE_TYPE(SfgApp, sfg_app, GTK_TYPE_APPLICATION);
 
+extern int simulacionActivada;
+
 static void
 sfg_app_init(SfgApp *app)
 {
@@ -22,6 +24,11 @@ anadir_multiples_activated(GSimpleAction *action,
                            GVariant *parameter,
                            gpointer app)
 {
+  //Si la simulación está activa no se pueden añadir cuerpos
+  if(simulacionActivada){
+    return;
+  }
+
   GtkWindow *win;
 
   win = gtk_application_get_active_window(GTK_APPLICATION(app));

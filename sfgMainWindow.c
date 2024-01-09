@@ -55,9 +55,8 @@ static GMutex mutexCirculos;
 //Variables con los ajustes personalizables de la simulacion
 float tiempoPorCiclo = 1;
 float distanciaRealPantalla = 1000;
-
-
-
+int centroX = 0;
+int centroY = 0;
 
 
 static void
@@ -111,12 +110,9 @@ static void pintar_cuerpos()
     cairo_fill(cr);
   }
   g_mutex_unlock(&mutexCirculos);
-
   cairo_destroy(cr);
   gtk_widget_queue_draw(win->area);
 }
-
-
 
 
 
@@ -157,7 +153,7 @@ resize_cb(GtkWidget *widget,
 
 
 
-void cambiarAjustes(float tiempo, float distancia, gchar *unidadesTiempo, gchar *unidadesDistancia){
+void cambiarAjustes(float tiempo, float distancia, gchar *unidadesTiempo, gchar *unidadesDistancia, int nuevoCentroX, int nuevoCentroY){
 
   //Ajustes de tiempo
   if(g_strcmp0(unidadesTiempo, "segundos") == 0){
@@ -180,9 +176,21 @@ void cambiarAjustes(float tiempo, float distancia, gchar *unidadesTiempo, gchar 
   //Ajustes de distancia
   if(g_strcmp0(unidadesDistancia, "metros")==0){
     distanciaRealPantalla = distancia;
-  }else{
+  }else if(g_strcmp0(unidadesDistancia, "kilometros") == 0){
     distanciaRealPantalla = distancia*1000;
   }
+
+  //Ajustes de centro
+  centroX = nuevoCentroX;
+  centroY = nuevoCentroY;
+  
+  printf("------------------------------------------ \n");
+  printf("AJUSTES DE SIMULACION: \n");
+  printf("Tiempo por ciclo %.1f segundos \n",tiempoPorCiclo);
+  printf("Distancia Real %.1f metros \n",distanciaRealPantalla);
+  printf("CentroX: %d \n",centroX);
+  printf("CentroY: %d \n",centroY);
+  printf("------------------------------------------ \n");
 
   pintar_cuerpos();
 }
@@ -306,8 +314,8 @@ void add_cuerpo(float masa, float posX, float posY, float velX, float velY, gcha
   }
 
   // los valores los introduce el usuario
-  miCirculo[numCuerpos].x = cuerpoSimulacion->posicionX / distanciaRealPantalla;
-  miCirculo[numCuerpos].y = cuerpoSimulacion->posicionY / distanciaRealPantalla;
+  miCirculo[numCuerpos].x = (cuerpoSimulacion->posicionX - centroX) / distanciaRealPantalla;
+  miCirculo[numCuerpos].y = (cuerpoSimulacion->posicionY - centroY) / distanciaRealPantalla;
 
   numCuerpos++;
 
@@ -364,8 +372,8 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
     cuerpos[j].velocidadY = 0;
 
     miCirculo[i].tam = (cuerpos[j].masa/masaMax) * 20 + 1; 
-    miCirculo[i].x = (double)(cuerpos[j].posicionX/distanciaRealPantalla);
-    miCirculo[i].y = (double)(cuerpos[j].posicionY/distanciaRealPantalla);
+    miCirculo[i].x = (double)((cuerpos[j].posicionX - centroX)/distanciaRealPantalla);
+    miCirculo[i].y = (double)((cuerpos[j].posicionY - centroY)/distanciaRealPantalla);
 
     miCirculo[i].r = (double)rand() / RAND_MAX;
     miCirculo[i].g = (double)rand() / RAND_MAX;
@@ -386,8 +394,13 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
 static void
 anadir_cuerpo()
 {
+  //Si la simulación está activa no se pueden añadir cuerpos
+  if(simulacionActivada){
+    return;
+  }
+
   SfgAucWindow *auc = sfg_auc_window_new(SFG_MAIN_WINDOW(win));
-  gtk_window_set_default_size(GTK_WINDOW(auc), 400, 300);
+  gtk_window_set_default_size(GTK_WINDOW(auc), 400, 00);
   gtk_window_present(GTK_WINDOW(auc));
 }
 
@@ -442,8 +455,8 @@ comenzar_simulacion_thread(gpointer datos)
     {
       for (i = 0; i < numCuerpos; ++i)
       {
-        miCirculo[i].x = cuerposSimulacion[i].posicionX / distanciaRealPantalla;
-        miCirculo[i].y = cuerposSimulacion[i].posicionY / distanciaRealPantalla;
+        miCirculo[i].x = (cuerposSimulacion[i].posicionX - centroX) / distanciaRealPantalla;
+        miCirculo[i].y = (cuerposSimulacion[i].posicionY - centroY) / distanciaRealPantalla;
       }
     }
   }

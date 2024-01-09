@@ -90,6 +90,56 @@
         </child>
 
         <child>
+          <object class="GtkBox" id="content_area3">
+            <property name="margin-start">10</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            
+            <child>
+              <object class="GtkLabel" id="labelCentroX">
+                <property name="label">Introduzca la coordenada X del nuevo centro</property>
+                <property name="margin-end">5</property>
+              </object>
+            </child>
+            
+            <child>
+              <object class="GtkEntry" id="nuevoCentroX">
+                <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+                <property name="margin-top">5</property>
+                <property name="width-chars">20</property> 
+                <property name="margin-end">5</property>
+                <signal name="changed" handler="obtenerNuevoCentroX" swapped="no"/>
+              </object>
+            </child>
+            
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkBox" id="content_area4">
+            <property name="margin-start">10</property>
+            <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+            
+            <child>
+              <object class="GtkLabel" id="labelCentroY">
+                <property name="label">Introduzca la coordenada Y del nuevo centro</property>
+                <property name="margin-end">5</property>
+              </object>
+            </child>
+            
+            <child>
+              <object class="GtkEntry" id="nuevoCentroY">
+                <property name="input-purpose">GTK_INPUT_PURPOSE_NUMBER</property>
+                <property name="margin-top">5</property>
+                <property name="width-chars">20</property> 
+                <property name="margin-end">5</property>
+                <signal name="changed" handler="obtenerNuevoCentroY" swapped="no"/>
+              </object>
+            </child>
+            
+          </object>
+        </child>
+
+        <child>
           <object class="GtkButton" id="botonConfirmar">
             <property name="label">Confirmar</property>
             <property name="margin-top">10</property>

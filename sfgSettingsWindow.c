@@ -11,11 +11,15 @@ struct _SfgSettingsWindow
     GtkWidget *tiempo;
     GtkWidget *distancia;
     GtkWidget *botonConfirmar;
+    GtkWidget *nuevoCentroX;
+    GtkWidget *nuevoCentroY;
 };
 
 float tiempo, distancia;
+int nuevoCentroX, nuevoCentroY;
 gchar *unidadesTiempo;
 gchar *unidadesDistancia;
+extern int centroX, centroY;
 
 G_DEFINE_TYPE(SfgSettingsWindow, sfg_settings_window, GTK_TYPE_DIALOG);
 SfgSettingsWindow *settings_win;
@@ -43,13 +47,32 @@ static void obtenerUnidadesDistancia(GtkComboBoxText *widget, gpointer user_data
     unidadesDistancia = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget)); 
 }
 
+static void obtenerNuevoCentroX(GtkEntry *entry, gpointer user_data)
+{
+    const gchar *cadenaNuevoCentroX = gtk_editable_get_text(GTK_EDITABLE(entry));
+    nuevoCentroX = atoi(cadenaNuevoCentroX);
+}
+
+static void obtenerNuevoCentroY(GtkEntry *entry, gpointer user_data)
+{
+    const gchar *cadenaNuevoCentroY = gtk_editable_get_text(GTK_EDITABLE(entry));
+    nuevoCentroY = atoi(cadenaNuevoCentroY);
+}
+
 //Función que maneja la señal de clic en el botón 
 static void confirmar(GtkButton *button, gpointer user_data)
 {
-    if (tiempo != 0 && unidadesTiempo != NULL && distancia != 0 && unidadesDistancia != NULL)
-    {
-        cambiarAjustes(tiempo, distancia, unidadesTiempo, unidadesDistancia);
+    if(tiempo==0){
+        unidadesTiempo = NULL;
     }
+
+    if(distancia==0){
+        unidadesDistancia = NULL;
+
+    }
+
+    cambiarAjustes(tiempo, distancia, unidadesTiempo, unidadesDistancia, nuevoCentroX, nuevoCentroY);
+    
     gtk_window_destroy((GtkWindow *)settings_win);
 }
 
@@ -61,6 +84,8 @@ sfg_settings_window_init(SfgSettingsWindow *win)
     distancia = 0;
     unidadesTiempo = NULL;
     unidadesDistancia = NULL;
+    nuevoCentroX = centroX;
+    nuevoCentroY = centroY;
 }
 
 // Funcion que se llama al cerrar la ventana para liberar recursos
@@ -78,12 +103,16 @@ sfg_settings_window_class_init(SfgSettingsWindowClass *class)
                                                 "/com/git/sfg/settingsWindow.ui");
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgSettingsWindow, tiempo);
     gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), SfgSettingsWindow, distancia);
+    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgSettingsWindow, nuevoCentroX);
+    gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgSettingsWindow, nuevoCentroY);
     gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (class), SfgSettingsWindow, botonConfirmar);
 
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerTiempo);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerDistancia);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerUnidadesTiempo);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerUnidadesDistancia);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerNuevoCentroX);
+    gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), obtenerNuevoCentroY);
     gtk_widget_class_bind_template_callback(GTK_WIDGET_CLASS(class), confirmar);
 }
 

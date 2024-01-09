@@ -3,7 +3,7 @@
   <template class="SfgMainWindow" parent="GtkApplicationWindow">
     <property name="title" translatable="yes">Simulador de Fuerzas Gravitatorias</property>
     <property name="default-width">1000</property>
-    <property name="default-height">500</property>
+    <property name="default-height">1000</property>
     <signal name="destroy" handler="sfg_main_window_destroy"/>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header">
