@@ -55,8 +55,10 @@ static GMutex mutexCirculos;
 //Variables con los ajustes personalizables de la simulacion
 float tiempoPorCiclo = 1;
 float distanciaRealPantalla = 1000;
+
 int centroX = 0;
 int centroY = 0;
+int contadorCiclos = 0;
 
 
 static void
@@ -359,7 +361,13 @@ void add_cuerpos(int numCuerposAdd, int masaMin, int masaMax)
 
   
 
-  int pseudoMax = masaMax - masaMin;
+  int pseudoMax;
+  
+  if(masaMax == masaMin){
+    pseudoMax = 1;
+  } else{
+    pseudoMax = masaMax - masaMin;
+  }
 
   miCirculo = tempPointer;
   for (i = numCuerpos, j = 0; i < numCuerposNuevo; ++i, ++j)
@@ -411,6 +419,15 @@ anadir_cuerpo()
 
 
 
+
+static void printCiclosPorMinuto(){
+  if(simulacionActivada){
+    printf("La simulacion realiza %d por minuto\n", contadorCiclos*2);
+    contadorCiclos = 0;
+  }
+}
+
+
 static gpointer
 comenzar_simulacion_thread(gpointer datos)
 {
@@ -421,6 +438,8 @@ comenzar_simulacion_thread(gpointer datos)
 
   // En caso de que al simular haya un choque, la última posicon del array miCirculo deberá ir a esta posicion
   int numMasaACambiar;
+
+  contadorCiclos = 0;
 
   g_source_set_callback(source, pintar_cuerpos, NULL, NULL);
 
@@ -459,6 +478,8 @@ comenzar_simulacion_thread(gpointer datos)
         miCirculo[i].y = (cuerposSimulacion[i].posicionY - centroY) / distanciaRealPantalla;
       }
     }
+
+    ++contadorCiclos;
   }
 
   free(cuerposSimulacion);
@@ -570,6 +591,10 @@ sfg_main_window_new(SfgApp *app)
 
   context = g_main_context_get_thread_default();
   g_mutex_init(&mutexCirculos);
+
+  GSource *source = g_timeout_source_new(30000);
+  g_source_set_callback(source, printCiclosPorMinuto, NULL, NULL);
+  g_source_attach(source, context);
 
   return win;
 }
