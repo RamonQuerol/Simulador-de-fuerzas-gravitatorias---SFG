@@ -38,13 +38,6 @@ anadir_multiples_activated(GSimpleAction *action,
 }
 
 static void
-ver_lista_activated(GSimpleAction *action,
-                    GVariant *parameter,
-                    gpointer app)
-{
-}
-
-static void
 ajustes_activated(GSimpleAction *action,
                   GVariant *parameter,
                   gpointer app)
@@ -69,7 +62,6 @@ static GActionEntry app_entries[] =
     {
         {"anadirmultiples", anadir_multiples_activated, NULL, NULL, NULL},
         {"ajustes", ajustes_activated, NULL, NULL, NULL},
-        {"lista", ver_lista_activated, NULL, NULL, NULL},
         {"salir", salir_activated, NULL, NULL, NULL}};
 
 static void

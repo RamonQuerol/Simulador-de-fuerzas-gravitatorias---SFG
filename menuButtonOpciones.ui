@@ -15,12 +15,6 @@
     </section>
     <section>
       <item>
-        <attribute name="label" translatable="yes">_Ver lista de cuerpos</attribute>
-        <attribute name="action">app.lista</attribute>
-      </item>
-    </section>
-    <section>
-      <item>
         <attribute name="label" translatable="yes">_Salir</attribute>
         <attribute name="action">app.salir</attribute>
       </item>

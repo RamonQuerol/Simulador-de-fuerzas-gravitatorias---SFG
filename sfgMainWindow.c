@@ -495,7 +495,11 @@ comenzar_simulacion_thread(gpointer datos)
 static void
 comenzar_simulacion()
 {
-
+  //Si la simulación está activa no se pueden añadir cuerpos
+  if(simulacionActivada){
+    return;
+  }
+  
   printf("Simulacion comenzada\n");
 
   GThread *thread;
